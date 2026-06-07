@@ -38,7 +38,7 @@ export default async function RootLayout({
         text-white`}
     >
       {/* Layout Structure */}
-      <div className="max-w-360 mx-auto relative text-white">
+      <div className=" relative text-white">
        {children}
       </div>
     </div>

@@ -8,3 +8,7 @@ export async function createBoard(workspaceId: string,data: TCreateBoardPayload)
 export async function getBoardsByWorkspaceId(workspaceId: string) {
     return readData(`/boards/workspaces/${workspaceId}/boards`, [""])
 }
+
+export async function getBoardById(boardId:string) {
+    return readData(`/boards/${boardId}`, [""])
+}
