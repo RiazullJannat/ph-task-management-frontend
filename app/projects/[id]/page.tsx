@@ -10,7 +10,6 @@ export default async function page({
 }) {
     const { id } = await params
     const workspace = await getWorkspaceById(id)
-    console.log(workspace)
 
     return (
         <div>
