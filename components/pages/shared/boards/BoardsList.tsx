@@ -2,6 +2,7 @@ import { TBoard } from '@/types/baordType/board.type';
 import Link from 'next/link';
 
 export default function BoardsList({ boards, workspaceId }: { boards: TBoard[], workspaceId: string }) {
+
     return (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {boards?.map((board) => (

@@ -40,7 +40,7 @@ interface BoardCreator {
   avatar_url: string | null;
 }
 
-interface BoardMemberUser {
+interface TBoardMemberUser {
   id: string;
   name: string;
   email: string;
@@ -53,7 +53,17 @@ interface BoardMember {
   user_id: string;
   role: string;
   joined_at: string;
-  user: BoardMemberUser;
+  user: TBoardMemberUser;
+}
+
+
+export interface TBoardMember {
+  id: string;
+  workspace_id: string;
+  user_id: string;
+  role: string;
+  joined_at: string;
+  user: TBoardMemberUser;
 }
 
 interface Card {

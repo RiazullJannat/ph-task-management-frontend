@@ -17,7 +17,6 @@ export const proxy = async (request: NextRequest) => {
   const { pathname } = request.nextUrl;
   const response = NextResponse.next();
 
- 
   const token = request.cookies.get("accessToken")?.value;
   const refreshToken = request.cookies.get("refreshToken")?.value;
 
@@ -26,20 +25,13 @@ export const proxy = async (request: NextRequest) => {
   }
 
   if (token && authRoutes.includes(pathname)) {
-    const userInfo = await getCurrentUser();
-    const permissions = userInfo?.permissions ?? [];
+    const userInfo = await getCurrentUser()
     const role = userInfo?.role ?? null;
     if (!role || !allowedRoles.includes(role)) {
       await logout();
       return NextResponse.redirect(new URL("/login", request.url));
     } else {
-      const redirectPath = getRedirectPath(
-        role,
-        [role, ...permissions].filter(Boolean),
-        permissionBasedRoutes,
-      );
-
-      return NextResponse.redirect(new URL(redirectPath, request.url));
+      return NextResponse.redirect(new URL("/login", request.url));
     }
   }
   // ✅ Logged-out users can access auth routes
@@ -78,10 +70,10 @@ export const proxy = async (request: NextRequest) => {
 
   // ✅ Step 2: Get user info using valid token
   const userInfo = await getCurrentUser();
-  const permission = userInfo?.permissions ?? [];
+  console.log(userInfo)
 
   if (!userInfo) {
-    if (authRoutes.includes(pathname)) return response;
+    await logout()
     return NextResponse.redirect(
       new URL(`/login?redirectPath=${pathname}`, request.url),
     );
@@ -89,37 +81,8 @@ export const proxy = async (request: NextRequest) => {
 
   const role = userInfo?.role ?? null;
   if (!role || !allowedRoles.includes(role)) {
+    await logout()
     return NextResponse.redirect(new URL(`/login`, request.url));
-  }
-
-  const matchedRoute = permissionBasedRoutes
-    .sort((a, b) => (b?.path?.length ?? 0) - (a?.path?.length ?? 0))
-    .find((route) => new RegExp(`^${route?.path ?? ""}$`).test(pathname));
-
-  if (!matchedRoute) {
-    return response;
-  }
-  const isPublicRoute =
-    !matchedRoute?.ownerOnly &&
-    (!matchedRoute?.permissions || matchedRoute.permissions.length === 0);
-
-
-
-  // ✅ Public route (everyone logged-in)
-  if (isPublicRoute) {
-    return response;
-  }
-
-  // ✅ Permission-based route
-  const userRolesAndPermissions = [role, ...permission].filter(Boolean);
-  const hasUserThePermission = hasPermission(
-    userRolesAndPermissions,
-    matchedRoute?.permissions ?? [],
-  );
-
-  if (!hasUserThePermission) {
-    await logout();
-    return NextResponse.redirect(new URL("/login", request.url));
   }
 
   return response;

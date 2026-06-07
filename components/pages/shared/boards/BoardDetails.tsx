@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
@@ -8,14 +9,22 @@ import {
     MessageSquare, Paperclip, CheckSquare,
     Clock, UserPlus, Share2, Star, AlignLeft, X
 } from "lucide-react";
-import { createList } from "@/service/listService/list.service";
+import { createList, createCard } from "@/service/listService/list.service";
+import CardDetailsModal from "./CardDetailsModal";
 import { toast } from "sonner";
 
 export default function BoardDetails({ board, projectId }: { board: TBoardDetails, projectId: string }) {
     const [isAddingList, setIsAddingList] = useState(false);
     const [newListName, setNewListName] = useState("");
     const [isSubmittingList, setIsSubmittingList] = useState(false);
+    
+    // Card states
+    const [addingCardToListId, setAddingCardToListId] = useState<string | null>(null);
+    const [newCardTitle, setNewCardTitle] = useState("");
+    const [isSubmittingCard, setIsSubmittingCard] = useState(false);
 
+    // Modal states
+    const [selectedCard, setSelectedCard] = useState<any>(null);
 
     const handleCreateList = async () => {
         if (!newListName.trim()) return;
@@ -34,6 +43,26 @@ export default function BoardDetails({ board, projectId }: { board: TBoardDetail
             toast.error('Failed to create list', { id: toastId })
         } finally {
             setIsSubmittingList(false);
+        }
+    };
+
+    const handleCreateCard = async (listId: string) => {
+        if (!newCardTitle.trim()) return;
+        setIsSubmittingCard(true);
+        const toastId = toast.loading('Creating card...');
+        try {
+            const res = await createCard(board?.id, listId, { title: newCardTitle }, projectId);
+            if (res.success) {
+                toast.success(res.message, { id: toastId });
+                setAddingCardToListId(null);
+                setNewCardTitle("");
+            } else {
+                toast.error(res.message || 'Failed to create card', { id: toastId });
+            }
+        } catch (error) {
+            toast.error('Failed to create card', { id: toastId });
+        } finally {
+            setIsSubmittingCard(false);
         }
     };
 
@@ -121,6 +150,7 @@ export default function BoardDetails({ board, projectId }: { board: TBoardDetail
                                 {list.cards?.map((card) => (
                                     <div
                                         key={card.id}
+                                        onClick={() => setSelectedCard(card)}
                                         className="bg-[#22272B] hover:bg-[#2C3338] hover:ring-2 hover:ring-blue-500/50 text-white p-3 rounded-lg shadow-sm border border-white/5 cursor-pointer group transition-all duration-200"
                                     >
                                         {/* Cover Image */}
@@ -147,7 +177,15 @@ export default function BoardDetails({ board, projectId }: { board: TBoardDetail
                                             </div>
                                         )}
 
-                                        <p className="text-sm text-white/90 mb-3 leading-snug">{card.title}</p>
+                                        <div className="flex items-start gap-2 mb-3">
+                                            <input 
+                                                type="checkbox" 
+                                                className="mt-1 w-4 h-4 rounded-full accent-blue-500 cursor-pointer flex-shrink-0" 
+                                                title="Check/Uncheck"
+                                                onClick={(e) => e.stopPropagation()}
+                                            />
+                                            <p className="text-sm text-white/90 leading-snug">{card.title}</p>
+                                        </div>
 
                                         {/* Badges */}
                                         <div className="flex items-center justify-between text-white/50 text-xs">
@@ -202,16 +240,60 @@ export default function BoardDetails({ board, projectId }: { board: TBoardDetail
                                 ))}
                             </div>
 
-                            {/* Add Card Button */}
-                            <div className="p-2 pt-1">
-                                <button className="flex items-center gap-2 text-sm text-white/60 hover:text-white hover:bg-white/10 w-full p-2 rounded-lg transition-colors group">
-                                    <Plus size={16} />
-                                    <span>Add a card</span>
-                                    <div className="ml-auto opacity-0 group-hover:opacity-100 p-1 hover:bg-white/20 rounded">
-                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                            {/* Add Card Button / Form */}
+                            {addingCardToListId === list.id ? (
+                                <div className="p-2 pt-1">
+                                    <textarea
+                                        value={newCardTitle}
+                                        onChange={(e) => setNewCardTitle(e.target.value)}
+                                        placeholder="Enter a title for this card..."
+                                        className="w-full bg-[#22272B] text-white/90 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2 border border-white/10 resize-none"
+                                        autoFocus
+                                        rows={2}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter' && !e.shiftKey) {
+                                                e.preventDefault();
+                                                handleCreateCard(list.id);
+                                            }
+                                            if (e.key === 'Escape') {
+                                                setAddingCardToListId(null);
+                                                setNewCardTitle("");
+                                            }
+                                        }}
+                                    />
+                                    <div className="flex items-center gap-2">
+                                        <button
+                                            onClick={() => handleCreateCard(list.id)}
+                                            disabled={isSubmittingCard || !newCardTitle.trim()}
+                                            className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-3 py-1.5 rounded transition disabled:opacity-50"
+                                        >
+                                            {isSubmittingCard ? "Adding..." : "Add card"}
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                setAddingCardToListId(null);
+                                                setNewCardTitle("");
+                                            }}
+                                            className="p-1.5 text-white/60 hover:text-white hover:bg-white/10 rounded transition"
+                                        >
+                                            <X size={20} />
+                                        </button>
                                     </div>
-                                </button>
-                            </div>
+                                </div>
+                            ) : (
+                                <div className="p-2 pt-1">
+                                    <button 
+                                        onClick={() => setAddingCardToListId(list.id)}
+                                        className="flex items-center gap-2 text-sm text-white/60 hover:text-white hover:bg-white/10 w-full p-2 rounded-lg transition-colors group"
+                                    >
+                                        <Plus size={16} />
+                                        <span>Add a card</span>
+                                        <div className="ml-auto opacity-0 group-hover:opacity-100 p-1 hover:bg-white/20 rounded">
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                                        </div>
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     ))}
 
@@ -304,6 +386,16 @@ export default function BoardDetails({ board, projectId }: { board: TBoardDetail
                     background-clip: padding-box;
                 }
             `}} />
+
+            {/* Card Details Modal */}
+            {selectedCard && (
+                <CardDetailsModal
+                    card={selectedCard}
+                    board={board}
+                    projectId={projectId}
+                    onClose={() => setSelectedCard(null)}
+                />
+            )}
         </div>
     )
 }
