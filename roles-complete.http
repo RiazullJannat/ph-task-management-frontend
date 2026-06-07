@@ -1,0 +1,266 @@
+### Variables
+@baseUrl = https://optiluxbd-server.vercel.app/api/v1
+@adminEmail = admin@gmail.com
+@adminPassword = Password@123
+
+### ==================== AUTHENTICATION ====================
+
+### 1. Login as Admin (Get Access Token)
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{adminEmail}}",
+  "password": "{{adminPassword}}"
+}
+
+### Extract access token from login response
+@accessToken = {{login.response.body.data.token}}
+
+### ==================== PERMISSIONS API ====================
+### Frontend should call these to get available permissions
+
+### 2. Get All Available Permissions (Flat List)
+# Returns: [{ id: 1, key: "users.create", name: "users.create" }, ...]
+# Frontend can use this to show checkboxes for role creation
+GET {{baseUrl}}/roles/permissions
+Authorization: Bearer {{accessToken}}
+
+### 3. Get Permissions Grouped by Resource
+# Returns: { users: [...], products: [...], customers: [...], images: [...], addresses: [...] }
+# Frontend can use this to organize permissions by module
+GET {{baseUrl}}/roles/permissions/grouped
+Authorization: Bearer {{accessToken}}
+
+### ==================== ROLE MANAGEMENT API ====================
+
+### 4. List All Roles with Users and Permissions
+GET {{baseUrl}}/roles
+Authorization: Bearer {{accessToken}}
+
+### 5. Get Single Role by ID
+GET {{baseUrl}}/roles/1
+Authorization: Bearer {{accessToken}}
+
+### 6. Create New Role - MANAGER
+# @name createManager
+POST {{baseUrl}}/roles
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "MANAGER",
+  "description": "Manager role with customer and product management permissions",
+  "permissions": [
+    "customers.view",
+    "customers.create",
+    "customers.update",
+    "products.view",
+    "products.create",
+    "products.update",
+    "users.view"
+  ]
+}
+
+### 7. Create New Role - SALES
+POST {{baseUrl}}/roles
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "SALES",
+  "description": "Sales role with customer read and create permissions",
+  "permissions": [
+    "customers.view",
+    "customers.create",
+    "products.view"
+  ]
+}
+
+### 8. Create New Role - SUPPORT
+POST {{baseUrl}}/roles
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "SUPPORT",
+  "description": "Support role with view-only access",
+  "permissions": [
+    "customers.view",
+    "products.view",
+    "users.view"
+  ]
+}
+
+### 9. Create New Role - WAREHOUSE
+POST {{baseUrl}}/roles
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "WAREHOUSE",
+  "description": "Warehouse role with product and inventory management",
+  "permissions": [
+    "products.view",
+    "products.update",
+    "products.create"
+  ]
+}
+
+### 10. Update Role Permissions
+# Change permissions for an existing role (e.g., roleId = 3)
+PATCH {{baseUrl}}/roles/3/permissions
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "permissions": [
+    "customers.view",
+    "customers.create",
+    "customers.update",
+    "products.view"
+  ]
+}
+
+### 11. Delete Role (only if no users have it)
+# Will fail if users are assigned to this role
+DELETE {{baseUrl}}/roles/5
+Authorization: Bearer {{accessToken}}
+
+### ==================== USER-ROLE ASSIGNMENT API ====================
+
+### 12. Assign Role to User
+# Assign role with ID 2 to user with ID 10
+POST {{baseUrl}}/roles/2/assign
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "userId": 10
+}
+
+### 13. Assign Multiple Roles Example
+# Assign MANAGER role (assume roleId = 3)
+POST {{baseUrl}}/roles/3/assign
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "userId": 10
+}
+
+### 14. Remove Role from User
+# Remove role with ID 2 from user with ID 10
+# POST {{baseUrl}}/roles/{roleId}/remove
+POST {{baseUrl}}/roles/2/remove
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "userId": 6
+}
+
+### 15. Get All Roles for a Specific User
+# Get all roles assigned to user with ID 1 (likely admin)
+GET {{baseUrl}}/roles/users/1
+Authorization: Bearer {{accessToken}}
+
+### 16. Get Roles for Another User
+GET {{baseUrl}}/roles/users/10
+Authorization: Bearer {{accessToken}}
+
+### ==================== ERROR CASES / VALIDATION ====================
+
+### 17. Test Invalid Request - Missing required field (name)
+POST {{baseUrl}}/roles
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "description": "Missing name field"
+}
+
+### 18. Test Invalid Request - Invalid permissions format
+POST {{baseUrl}}/roles
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "TEST_ROLE",
+  "description": "Test role",
+  "permissions": "should-be-array-not-string"
+}
+
+### 19. Test Invalid Role ID
+GET {{baseUrl}}/roles/99999
+Authorization: Bearer {{accessToken}}
+
+### 20. Test Assign Role to Non-Existent User
+POST {{baseUrl}}/roles/2/assign
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "userId": 99999
+}
+
+### 21. Test Remove Role User Doesn't Have
+POST {{baseUrl}}/roles/2/remove
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "userId": 1
+}
+
+### 22. Test Delete Role with Users Assigned
+# Should fail if role has users
+DELETE {{baseUrl}}/roles/1
+Authorization: Bearer {{accessToken}}
+
+### ==================== AUTHORIZATION TESTS ====================
+
+### 23. Test Unauthorized Access (No Token)
+GET {{baseUrl}}/roles
+
+### 24. Test Unauthorized Access (Invalid Token)
+GET {{baseUrl}}/roles
+Authorization: Bearer invalid_token_here
+
+### 25. Test Permissions Endpoint (Available to All Authenticated Users)
+# This should work even for non-admin users
+GET {{baseUrl}}/roles/permissions
+Authorization: Bearer {{accessToken}}
+
+### ==================== REAL-WORLD WORKFLOW EXAMPLE ====================
+
+### 26. Complete Workflow: Create Role and Assign to User
+# Step 1: Create a custom "DATA_ANALYST" role
+POST {{baseUrl}}/roles
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "DATA_ANALYST",
+  "description": "Data analyst with read-only access to all modules",
+  "permissions": [
+    "users.view",
+    "products.view",
+    "customers.view"
+  ]
+}
+
+### Step 2: Get the newly created role ID from response, then assign to user
+# (Replace {newRoleId} with actual ID from previous response)
+POST {{baseUrl}}/roles/{newRoleId}/assign
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "userId": 10
+}
+
+### Step 3: Verify user has the new role
+GET {{baseUrl}}/roles/users/10
+Authorization: Bearer {{accessToken}}

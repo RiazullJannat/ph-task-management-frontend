@@ -1,0 +1,100 @@
+### Variables
+@baseUrl = https://optiluxbd-server.vercel.app/api/v1
+@adminEmail = thohanur143@gmail.com
+@adminPassword = Password@123
+
+### 1. Login as Admin (Get Access Token)
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{adminEmail}}",
+  "password": "{{adminPassword}}"
+}
+
+### Extract access token from login response
+@accessToken = {{login.response.body.data.token}}
+
+### 2. List All Roles
+GET {{baseUrl}}/roles
+Authorization: Bearer {{accessToken}}
+
+### 3. Create New Role - MANAGER
+POST {{baseUrl}}/roles
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "INSPECTOR",
+  "description": "Inspector role with customer and product management permissions",
+  "permissions": [
+    "customers.view",
+    "customers.update",
+    "products.view",
+    "products.create",
+    "products.update"
+  ]
+}
+
+### 4. Create New Role - SALES
+POST {{baseUrl}}/roles
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "SALES",
+  "description": "Sales role with customer read and create permissions",
+  "permissions": [
+    "customers.view",
+    "products.view"
+  ]
+}
+
+
+### 5. Assign Role to User
+# Replace {roleId} and {userId} with actual IDs from your database
+# POST {{baseUrl}}/roles/{roleId}/assign
+POST {{baseUrl}}/roles/{roleId}/assign
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "userId": "10"
+}
+
+### 6. Example: Assign AGENT role to a user
+# First get the role ID and user ID, then use them here
+POST {{baseUrl}}/roles/AGENT/assign
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "userId": "user-id-here"
+}
+
+### 7. Test Invalid Request - Missing required field (name)
+POST {{baseUrl}}/roles
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "description": "Missing name field"
+}
+
+### 8. Test Invalid Request - Missing permissions array
+POST {{baseUrl}}/roles
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "TEST_ROLE",
+  "description": "Test role without permissions"
+}
+
+### 9. Test Unauthorized Access (No Token)
+GET {{baseUrl}}/roles
+
+### 10. Test Unauthorized Access (Invalid Token)
+GET {{baseUrl}}/roles
+Authorization: Bearer invalid_token_here
