@@ -11,13 +11,15 @@ import {
 } from "lucide-react";
 import { createList, createCard } from "@/service/listService/list.service";
 import CardDetailsModal from "./CardDetailsModal";
+import AddBoardMemberModal from "./AddBoardMemberModal";
 import { toast } from "sonner";
+import { WorkspaceMember } from "@/types/projectType/project.type";
 
-export default function BoardDetails({ board, projectId }: { board: TBoardDetails, projectId: string }) {
+export default function BoardDetails({ board, projectId, users }: { board: TBoardDetails, projectId: string, users: WorkspaceMember[] }) {
     const [isAddingList, setIsAddingList] = useState(false);
     const [newListName, setNewListName] = useState("");
     const [isSubmittingList, setIsSubmittingList] = useState(false);
-    
+
     // Card states
     const [addingCardToListId, setAddingCardToListId] = useState<string | null>(null);
     const [newCardTitle, setNewCardTitle] = useState("");
@@ -25,13 +27,13 @@ export default function BoardDetails({ board, projectId }: { board: TBoardDetail
 
     // Modal states
     const [selectedCard, setSelectedCard] = useState<any>(null);
+    const [isAddMemberModalOpen, setIsAddMemberModalOpen] = useState(false);
 
     const handleCreateList = async () => {
         if (!newListName.trim()) return;
         const toastId = toast.loading('Creating list...')
         try {
             const res = await createList(board?.id, { name: newListName }, projectId);
-            console.log(res)
             if (res.success) {
                 toast.success(res.message, { id: toastId })
             }
@@ -103,7 +105,9 @@ export default function BoardDetails({ board, projectId }: { board: TBoardDetail
                                 </div>
                             ))}
                         </div>
-                        <button className="ml-2 w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center text-white transition ring-2 ring-transparent">
+                        <button
+                            onClick={() => setIsAddMemberModalOpen(true)}
+                            className="ml-2 w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center text-white transition ring-2 ring-transparent">
                             <UserPlus size={14} />
                         </button>
                     </div>
@@ -178,9 +182,9 @@ export default function BoardDetails({ board, projectId }: { board: TBoardDetail
                                         )}
 
                                         <div className="flex items-start gap-2 mb-3">
-                                            <input 
-                                                type="checkbox" 
-                                                className="mt-1 w-4 h-4 rounded-full accent-blue-500 cursor-pointer flex-shrink-0" 
+                                            <input
+                                                type="checkbox"
+                                                className="mt-1 w-4 h-4 rounded-full accent-blue-500 cursor-pointer flex-shrink-0"
                                                 title="Check/Uncheck"
                                                 onClick={(e) => e.stopPropagation()}
                                             />
@@ -282,7 +286,7 @@ export default function BoardDetails({ board, projectId }: { board: TBoardDetail
                                 </div>
                             ) : (
                                 <div className="p-2 pt-1">
-                                    <button 
+                                    <button
                                         onClick={() => setAddingCardToListId(list.id)}
                                         className="flex items-center gap-2 text-sm text-white/60 hover:text-white hover:bg-white/10 w-full p-2 rounded-lg transition-colors group"
                                     >
@@ -396,6 +400,15 @@ export default function BoardDetails({ board, projectId }: { board: TBoardDetail
                     onClose={() => setSelectedCard(null)}
                 />
             )}
+
+            {/* Add Member Modal */}
+            <AddBoardMemberModal
+                isOpen={isAddMemberModalOpen}
+                onClose={() => setIsAddMemberModalOpen(false)}
+                boardId={board?.id}
+                workspaceId={board?.workspace_id}
+                users={users}
+            />
         </div>
     )
 }

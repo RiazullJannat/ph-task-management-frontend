@@ -12,3 +12,7 @@ export const getAllWorkspaces = async () => {
 export const getWorkspaceById = async (id: string) => {
     return readData(`/workspaces/${id}`, ["/workspaces"])
 }
+
+export const addMemberToWorkspace = async (workspaceId: string, payload: { email: string; role: string }) => {
+    return await createData(`/workspaces/${workspaceId}/members`, `/projects/${workspaceId}`, payload);
+};

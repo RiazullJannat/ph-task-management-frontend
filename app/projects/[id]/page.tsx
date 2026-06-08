@@ -2,6 +2,8 @@ import PageHeader from "@/components/ui/PageHeader";
 import { getWorkspaceById } from "@/service/workspaceService/workspace.service";
 import CreateBoard from "@/components/pages/shared/boards/CreateBoard";
 import BoardsList from "@/components/pages/shared/boards/BoardsList";
+import { getAllUsers } from "@/service/authService";
+import AddWorkspaceMember from "@/components/pages/shared/workspaces/AddWorkspaceMember";
 
 export default async function page({
     params,
@@ -10,12 +12,16 @@ export default async function page({
 }) {
     const { id } = await params
     const workspace = await getWorkspaceById(id)
+    const users = await getAllUsers()
 
     return (
         <div>
             <div className="flex items-center justify-between pr-6 mb-6">
                 <PageHeader title={workspace?.data?.name || "Workspace"} subtitle={workspace?.data?.description || "Manage your boards here."} />
-                <CreateBoard workspaceId={id} />
+                <div className="flex items-center gap-3">
+                    <AddWorkspaceMember workspaceId={id} users={users?.data || []} />
+                    <CreateBoard workspaceId={id} />
+                </div>
             </div>
 
             <div className="p-6">

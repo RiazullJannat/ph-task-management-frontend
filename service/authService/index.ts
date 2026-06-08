@@ -182,3 +182,7 @@ export const updatePassword = async (data: TUpdatePassword) => {
   );
   return res;
 };
+
+export async function getAllUsers(){
+  return readData(`/users`,["workspace members"])
+}

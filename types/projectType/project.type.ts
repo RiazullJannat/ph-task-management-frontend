@@ -19,7 +19,7 @@ export interface WorkspaceUser {
   avatar_url: string | null;
 }
 
-interface WorkspaceMember {
+export interface WorkspaceMember {
   id: string;
   workspace_id: string;
   user_id: string;
