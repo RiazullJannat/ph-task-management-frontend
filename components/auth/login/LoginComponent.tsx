@@ -51,15 +51,15 @@ const LoginComponent = () => {
   const onSubmit = async (data: TLoginData) => {
     const toastId = toast.loading("logging in");
     try {
-      const res = await login(data);
+     const res = await login(data);
       if (res?.success) {
         setIsLoading(false);
         await refetchUser();
         toast.success(res?.message, { id: toastId, duration: 3000 });
         reset();  
-        router.push(redirect ? redirect : "/dashboard/profile");
+        // router.push(redirect ? redirect : "/dashboard/profile");
       } else {
-        toast.error(res?.error?.message, { id: toastId, duration: 3000 });
+        toast.error(res?.error?.messae, { id: toastId, duration: 3000 });
       }
     } catch (error: any) {
       toast.error("Something went wrong!", { id: toastId, duration: 3000 });
@@ -71,21 +71,13 @@ const LoginComponent = () => {
     const toastId = toast.loading("logging in");
     try {
       const res = await login(data);
+      console.log(res)
       if (res?.success) {
         setIsLoading(false);
         await refetchUser();
         toast.success(res?.message, { id: toastId, duration: 3000 });
         reset();
-        const onboarding =
-          res?.data?.onboarding || res?.data?.onboardingStatus?.data;
-        if (onboarding) {
-          const isCompleted =
-            onboarding?.completed || onboarding?.isOnboardingComplete || false;
-          if (!isCompleted) {
-            return router.push("/onboarding");
-          }
-        }
-        router.push(redirect ? redirect : "/dashboard/profile");
+        router.push(redirect ? redirect : "/dashboard");
       } else {
         toast.error(res?.message, { id: toastId, duration: 3000 });
       }
@@ -118,6 +110,34 @@ const LoginComponent = () => {
             <p className="text-[#9B98AE] text-sm">
               Sign in to your account for access
             </p>
+          </div>
+
+          {/* Quick Login Buttons */}
+          <div className="space-y-1.5 p-2.5 rounded-lg bg-white/5 border border-white/10 text-[10px]">
+            <span className="text-slate-400 font-bold uppercase block mb-1">Quick Login Demo Accounts:</span>
+            <div className="grid grid-cols-3 gap-1">
+              <button
+                type="button"
+                onClick={() => handleAdmin({ email: 'rjannat1@gmail.com', password: 'rjannat77111' })}
+                className="bg-blue-600/20 hover:bg-blue-600/40 border border-blue-500/20 text-blue-300 py-1 px-1 rounded transition text-center font-bold"
+              >
+                Admin
+              </button>
+              <button
+                type="button"
+                onClick={() => handleAdmin({ email: 'project@manager.com', password: 'projectmanager@123' })}
+                className="bg-purple-600/20 hover:bg-purple-600/40 border border-purple-500/20 text-purple-300 py-1 px-1 rounded transition text-center font-bold"
+              >
+                Manager
+              </button>
+              <button
+                type="button"
+                onClick={() => handleAdmin({ email: 'team@member.com', password: 'teammember@123' })}
+                className="bg-emerald-600/20 hover:bg-emerald-600/40 border border-emerald-500/20 text-emerald-300 py-1 px-1 rounded transition text-center font-bold"
+              >
+                Member
+              </button>
+            </div>
           </div>
 
           <div className="flex items-center gap-2 py-1">

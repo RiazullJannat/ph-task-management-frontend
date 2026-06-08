@@ -4,6 +4,7 @@ import CreateBoard from "@/components/pages/shared/boards/CreateBoard";
 import BoardsList from "@/components/pages/shared/boards/BoardsList";
 import { getAllUsers } from "@/service/authService";
 import AddWorkspaceMember from "@/components/pages/shared/workspaces/AddWorkspaceMember";
+import WorkspaceSettings from "@/components/pages/shared/workspaces/WorkspaceSettings";
 
 export default async function page({
     params,
@@ -20,6 +21,7 @@ export default async function page({
                 <PageHeader title={workspace?.data?.name || "Workspace"} subtitle={workspace?.data?.description || "Manage your boards here."} />
                 <div className="flex items-center gap-3">
                     <AddWorkspaceMember workspaceId={id} users={users?.data || []} />
+                    {workspace?.data && <WorkspaceSettings workspace={workspace.data} />}
                     <CreateBoard workspaceId={id} />
                 </div>
             </div>

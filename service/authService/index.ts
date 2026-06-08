@@ -4,10 +4,10 @@ import { customFetch } from "@/service/customFetch";
 
 import { config } from "@/config";
 import { jwtDecode } from "jwt-decode";
-import { cookies } from "next/headers";
 import { TForgetPasswordData } from "@/components/auth/forgetPassword/ForgetPasswordComponent";
 import { createData, readData } from "../apiService/crud";
 import { TSetNewPass } from "@/components/auth/resetPassword/SetNewPassword";
+import { cookies } from "next/headers";
 
 type TLogin = {
   email: string;
@@ -44,7 +44,6 @@ export const login = async (loginData: TLogin) => {
       },
     );
     const result = await res?.json();
-    console.log("result",result)
     if (result?.success) {
       const cookieStore = await cookies();
       cookieStore.set("accessToken", result?.data?.accessToken ?? '', {

@@ -1,13 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser, getNewToken, logout } from "./service/authService";
 import { isTokenExpired } from "./service/authService/validToken";
-import { hasPermission, permissionBasedRoutes } from "./utills/hasPermission";
-import { getRedirectPath } from "./utills/getRedirectPath";
 
 const allowedRoles = ["admin", "team_member", "project_manager"];
 
 const authRoutes = [
-  "/login",
   "/forgot-password",
   "/reset-password",
   "/register",
@@ -89,5 +86,5 @@ export const proxy = async (request: NextRequest) => {
 };
 
 export const config = {
-  matcher: ["/", "/dashboard", "/dashboard/:path*", "/login", "/register"],
+  matcher: [ "/dashboard", "/dashboard/:path*", "/register"],
 };

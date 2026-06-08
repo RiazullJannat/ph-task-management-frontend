@@ -18,6 +18,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
+import NavbarSearch from "./NavbarSearch";
 
 const Navbar: React.FC = () => {
   const { state } = useSidebar();
@@ -79,6 +80,9 @@ const Navbar: React.FC = () => {
             >
               <ArrowLeft />
             </Button>
+          </div>
+          <div className="flex-1 flex justify-center max-w-md">
+            <NavbarSearch />
           </div>
           <div className="flex items-center gap-4">
 

@@ -1,189 +1,254 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @next/next/no-img-element */
-import { useState } from "react";
-import { AlignLeft, Plus, CheckSquare, UserPlus, Paperclip, MessageSquare, X } from "lucide-react";
+"use client";
+
+import { useState, useEffect } from "react";
+import { X, Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import { addMemberToCard } from "@/service/listService/list.service";
 import { TBoardDetails } from "@/types/baordType/board.type";
+import { getCardDetails, updateCard, deleteCard } from "@/service/listService/list.service";
+import { TComplexCardDetails } from "@/types/cardType/card.type";
+import CardComments from "./CardComments";
+import CardMetadata from "./CardMetadata";
+import CardDescription from "./CardDescription";
+import CardChecklists from "./CardChecklists";
+import CardQuickActions from "./CardQuickActions";
+import CardCustomFields from "./CardCustomFields";
 
 interface CardDetailsModalProps {
-    card: any;
+    cardId: string;
     board: TBoardDetails;
     projectId: string;
     onClose: () => void;
+    onUpdateCard?: (updatedCard: any) => void;
+    onDeleteCard?: (cardId: string, listId: string) => void;
 }
 
-export default function CardDetailsModal({ card, board, projectId, onClose }: CardDetailsModalProps) {
-    const [isAssigningMember, setIsAssigningMember] = useState(false);
+export default function CardDetailsModal({
+    cardId,
+    board: initialBoard,
+    projectId,
+    onClose,
+    onUpdateCard,
+    onDeleteCard
+}: CardDetailsModalProps) {
+    const [card, setCard] = useState<TComplexCardDetails>();
+    const [board, setBoard] = useState<TBoardDetails>(initialBoard);
 
-    const handleAssignMember = async (userId: string) => {
-        if (!card) return;
-        const toastId = toast.loading('Assigning member...');
-        try {
-            const res = await addMemberToCard(board?.id, card.id, userId, projectId);
-            if (res.success) {
-                toast.success(res.message, { id: toastId });
-            } else {
-                toast.error(res.message || 'Failed to assign member', { id: toastId });
+    // Editing states
+    const [isEditingTitle, setIsEditingTitle] = useState(false);
+    const [cardTitle, setCardTitle] = useState("");
+
+    useEffect(() => {
+        const cardDetails = async () => {
+            try {
+                const res = await getCardDetails(board.id, cardId);
+                if (res.success) {
+                    setCard(res.data);
+                    setCardTitle(res.data.title);
+                } else {
+                    toast.error("Failed to load card details");
+                }
+            } catch (error) {
+                console.error("Error loading card details:", error);
+                toast.error("Failed to load card details");
             }
-        } catch (error) {
-            toast.error('Failed to assign member', { id: toastId });
+        };
+        cardDetails();
+    }, [board.id, cardId]);
+
+    const handleSaveTitle = async () => {
+        if (!card || !cardTitle.trim() || cardTitle === card.title) {
+            setIsEditingTitle(false);
+            return;
+        }
+        const toastId = toast.loading("Saving card title...");
+        try {
+            const res = await updateCard(board.id, card.id, { title: cardTitle }, projectId);
+            if (res.success) {
+                toast.success(res.message || "Card title updated successfully", { id: toastId });
+                const updated = { ...card, title: cardTitle };
+                setCard(updated);
+                if (onUpdateCard) onUpdateCard(updated);
+            } else {
+                toast.error(res.message || "Failed to save title", { id: toastId });
+            }
+        } catch (error: any) {
+            console.error("Error updating title:", error);
+            toast.error(error?.message || "An error occurred", { id: toastId });
         } finally {
-            setIsAssigningMember(false);
+            setIsEditingTitle(false);
         }
     };
 
+    const handleLocalUpdate = (updatedCard: any) => {
+        setCard(updatedCard);
+        if (onUpdateCard) onUpdateCard(updatedCard);
+    };
+
+    const handleDeleteCard = async () => {
+        if (!card) return;
+        if (!confirm("Are you sure you want to delete this card?")) return;
+        const toastId = toast.loading('Deleting card...');
+        try {
+            const res = await deleteCard(board.id, card.id, projectId);
+            if (res.success) {
+                toast.success(res.message || "Card deleted successfully", { id: toastId });
+                if (onDeleteCard) onDeleteCard(card.id, card.list_id);
+                onClose();
+            } else {
+                toast.error(res.message || "Failed to delete card", { id: toastId });
+            }
+        } catch (error: any) {
+            console.error("Error deleting card:", error);
+            toast.error(error?.message || "An error occurred", { id: toastId });
+        }
+    };
+
+    if (!card) {
+        return (
+            <div className="fixed inset-0 bg-black/75 backdrop-blur-md z-50 flex items-center justify-center p-4" onClick={onClose}>
+                <div className="bg-[#1C2126] border border-white/10 rounded-xl p-8 flex flex-col items-center justify-center text-white space-y-4">
+                    <div className="w-8 h-8 border-4 border-t-blue-500 border-white/10 rounded-full animate-spin"></div>
+                    <p className="text-xs text-white/55">Loading card details...</p>
+                </div>
+            </div>
+        );
+    }
+
     return (
-        <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 sm:p-6" onClick={onClose}>
-            <div 
-                className="bg-[#323940] w-full max-w-4xl max-h-full overflow-y-auto rounded-xl shadow-2xl flex flex-col relative border border-white/10"
+        <div className="fixed inset-0 bg-black/75 backdrop-blur-md z-50 flex items-center justify-center p-4" onClick={onClose}>
+            <div
+                className="bg-[#1C2126] border border-white/10 rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto custom-scrollbar flex flex-col relative text-white"
                 onClick={(e) => e.stopPropagation()}
             >
-                {/* Close button */}
-                <button 
-                    onClick={onClose}
-                    className="absolute top-4 right-4 text-white/50 hover:text-white p-1 hover:bg-white/10 rounded transition z-10"
-                >
-                    <X size={20} />
-                </button>
-
-                {/* Top Section - Template Banner Example */}
-                {card.is_template && (
-                    <div className="bg-[#1A2C42] p-4 flex items-center justify-between border-b border-white/5">
-                        <div className="flex items-center gap-3">
-                            <div className="bg-blue-400 p-1.5 rounded"><AlignLeft size={16} className="text-white" /></div>
-                            <span className="text-white font-medium">This is a Template card.</span>
-                        </div>
-                        <button className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded text-sm font-medium transition flex items-center gap-2">
-                            <Plus size={14} /> Create card from template
+                {/* Cover section */}
+                {card.cover_color && (
+                    <div className="h-28 w-full rounded-t-xl relative transition-all duration-300" style={{ backgroundColor: card.cover_color }}>
+                        <button
+                            onClick={async () => {
+                                const toastId = toast.loading("Removing cover color...");
+                                try {
+                                    const res = await updateCard(board.id, card.id, { cover_color: null }, projectId);
+                                    if (res.success) {
+                                        toast.success("Cover removed", { id: toastId });
+                                        handleLocalUpdate({ ...card, cover_color: null });
+                                    } else {
+                                        toast.error("Failed to remove cover", { id: toastId });
+                                    }
+                                } catch (error: any) {
+                                    toast.error("Error removing cover", { id: toastId });
+                                }
+                            }}
+                            className="absolute right-12 top-4 p-1.5 rounded-full bg-black/40 hover:bg-black/60 text-white transition-colors"
+                            title="Remove cover"
+                        >
+                            <X size={14} />
                         </button>
                     </div>
                 )}
 
-                <div className="flex flex-col md:flex-row p-6 gap-6">
-                    {/* Left Column */}
-                    <div className="flex-1 space-y-8">
-                        {/* Title Area */}
-                        <div className="flex items-start gap-4">
-                            <div className="mt-1 text-white/70"><AlignLeft size={24} /></div>
-                            <div className="flex-1">
-                                <h2 className="text-xl sm:text-2xl font-bold text-white mb-1">{card.title}</h2>
-                                <p className="text-sm text-white/60">in list <span className="underline cursor-pointer">{board.lists?.find(l => l.id === card.list_id)?.name || "Unknown List"}</span></p>
-                            </div>
-                        </div>
-
-                        {/* Action Buttons Row */}
-                        <div className="flex flex-wrap gap-2 pl-10">
-                            <button className="flex items-center gap-2 bg-transparent border border-white/20 hover:bg-white/10 text-white/90 px-3 py-1.5 rounded text-sm transition">
-                                <Plus size={16} /> Add
-                            </button>
-                            <button className="flex items-center gap-2 bg-transparent border border-white/20 hover:bg-white/10 text-white/90 px-3 py-1.5 rounded text-sm transition">
-                                <AlignLeft size={16} /> Labels
-                            </button>
-                            <button className="flex items-center gap-2 bg-transparent border border-white/20 hover:bg-white/10 text-white/90 px-3 py-1.5 rounded text-sm transition">
-                                <CheckSquare size={16} /> Checklist
-                            </button>
-                            
-                            {/* Members Dropdown */}
-                            <div className="relative">
-                                <button 
-                                    onClick={() => setIsAssigningMember(!isAssigningMember)}
-                                    className="flex items-center gap-2 bg-transparent border border-white/20 hover:bg-white/10 text-white/90 px-3 py-1.5 rounded text-sm transition"
-                                >
-                                    <UserPlus size={16} /> Members
-                                </button>
-                                
-                                {isAssigningMember && (
-                                    <div className="absolute top-full left-0 mt-2 w-64 bg-[#282E33] border border-white/10 rounded-lg shadow-xl z-20 py-2">
-                                        <div className="px-3 pb-2 mb-2 border-b border-white/10 flex justify-between items-center">
-                                            <h4 className="text-sm font-semibold text-white/80">Members</h4>
-                                            <button onClick={() => setIsAssigningMember(false)} className="text-white/50 hover:text-white"><X size={14} /></button>
-                                        </div>
-                                        <div className="max-h-64 overflow-y-auto custom-scrollbar px-2 space-y-1">
-                                            {board.members?.map((member) => (
-                                                <button 
-                                                    key={member.user_id}
-                                                    onClick={() => handleAssignMember(member.user_id)}
-                                                    className="w-full flex items-center gap-3 text-left text-sm text-white/90 hover:bg-white/10 p-2 rounded transition"
-                                                >
-                                                    <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-xs font-bold overflow-hidden flex-shrink-0">
-                                                        {member.user.avatar_url ? (
-                                                            <img src={member.user.avatar_url} alt="" className="w-full h-full object-cover" />
-                                                        ) : (
-                                                            member.user.name.charAt(0).toUpperCase()
-                                                        )}
-                                                    </div>
-                                                    <span className="truncate">{member.user.name}</span>
-                                                    {card.members?.some((m: any) => m.id === member.user_id || m.user_id === member.user_id) && (
-                                                        <CheckSquare size={14} className="ml-auto text-blue-400 flex-shrink-0" />
-                                                    )}
-                                                </button>
-                                            ))}
-                                            {(!board.members || board.members.length === 0) && (
-                                                <p className="text-white/50 text-xs px-2 py-1">No members found on this board.</p>
-                                            )}
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                            
-                            <button className="flex items-center gap-2 bg-transparent border border-white/20 hover:bg-white/10 text-white/90 px-3 py-1.5 rounded text-sm transition">
-                                <Paperclip size={16} /> Attachment
-                            </button>
-                        </div>
-
-                        {/* Description Area */}
-                        <div className="flex items-start gap-4">
-                            <div className="mt-1 text-white/70"><AlignLeft size={24} /></div>
-                            <div className="flex-1">
-                                <div className="flex items-center justify-between mb-3">
-                                    <h3 className="text-lg font-semibold text-white">Description</h3>
-                                </div>
-                                <textarea 
-                                    className="w-full bg-[#22272B] hover:bg-[#2C3338] focus:bg-[#22272B] focus:border-blue-500 focus:ring-1 focus:ring-blue-500 border border-white/10 text-white/90 rounded-lg p-3 text-sm min-h-[100px] transition resize-y"
-                                    placeholder="Add a more detailed description..."
-                                    defaultValue={card.description || ""}
-                                />
-                            </div>
-                        </div>
+                {/* Topbar of the modal */}
+                <div className="px-6 pt-5 pb-2 flex items-center justify-between border-b border-white/5">
+                    {/* List selection button */}
+                    <div className="flex items-center gap-1.5 text-xs font-semibold text-white/70 bg-white/5 hover:bg-white/10 px-2.5 py-1.5 rounded-md cursor-pointer transition select-none">
+                        <span>{board.lists?.find(l => l.id === card.list_id)?.name || "Task List"}</span>
+                        <span className="text-[10px]">▼</span>
                     </div>
 
-                    {/* Right Column - Comments and Activity */}
-                    <div className="w-full md:w-80 flex flex-col border-t md:border-t-0 md:border-l border-white/10 pt-6 md:pt-0 md:pl-6">
-                        <div className="flex items-center justify-between mb-4">
-                            <div className="flex items-center gap-2 text-white/90">
-                                <MessageSquare size={18} />
-                                <h3 className="font-semibold">Comments and activity</h3>
-                            </div>
-                            <button className="bg-white/10 hover:bg-white/20 text-white/80 px-2.5 py-1 rounded text-xs transition">
-                                Show details
-                            </button>
-                        </div>
-                        
-                        <div className="flex gap-3 mb-6">
-                            <div className="w-8 h-8 rounded-full bg-green-600 flex items-center justify-center text-xs font-bold text-white flex-shrink-0">
-                                U
+                    {/* Right-side icon actions */}
+                    <div className="flex items-center gap-3">
+                        <button
+                            onClick={handleDeleteCard}
+                            className="flex items-center gap-1.5 bg-red-600/10 hover:bg-red-600/20 text-red-400 border border-red-500/20 px-3 py-1.5 rounded-lg text-xs font-semibold hover:text-red-300 transition shadow-sm"
+                            title="Delete Card"
+                        >
+                            <Trash2 size={13} />
+                            <span>Delete Card</span>
+                        </button>
+                        <button onClick={onClose} className="text-white/50 hover:text-white transition p-1 hover:bg-white/5 rounded" title="Close">
+                            <X size={18} />
+                        </button>
+                    </div>
+                </div>
+
+                {/* Modal Grid */}
+                <div className="p-6 grid grid-cols-1 lg:grid-cols-5 gap-6">
+                    {/* Left Column: Title, Quick Actions, Description, Checklists */}
+                    <div className="lg:col-span-3 space-y-6">
+
+                        {/* Title block with circle icon */}
+                        <div className="flex items-start gap-3">
+                            <div className="w-5 h-5 rounded-full border-2 border-white/45 flex items-center justify-center text-xs font-bold text-white/45 mt-1 flex-shrink-0">
                             </div>
                             <div className="flex-1">
-                                <textarea 
-                                    className="w-full bg-[#22272B] border border-white/10 text-white/90 rounded-lg p-2.5 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-blue-500 transition h-10 hover:bg-[#2C3338] focus:h-20"
-                                    placeholder="Write a comment..."
-                                />
+                                {isEditingTitle ? (
+                                    <input
+                                        type="text"
+                                        value={cardTitle}
+                                        onChange={(e) => setCardTitle(e.target.value)}
+                                        onBlur={handleSaveTitle}
+                                        onKeyDown={(e) => e.key === "Enter" && handleSaveTitle()}
+                                        className="w-full bg-[#22272B] border border-blue-500 rounded-lg px-3 py-1.5 text-lg font-semibold text-white focus:outline-none"
+                                        autoFocus
+                                    />
+                                ) : (
+                                    <h2
+                                        onClick={() => setIsEditingTitle(true)}
+                                        className="text-xl font-bold text-white cursor-pointer hover:bg-white/5 px-2 py-1 -ml-2 rounded"
+                                    >
+                                        {card.title}
+                                    </h2>
+                                )}
                             </div>
                         </div>
 
-                        {/* Example Activity */}
-                        <div className="space-y-4">
-                            <div className="flex gap-3">
-                                <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-xs font-bold text-white flex-shrink-0">
-                                    RJ
-                                </div>
-                                <div className="text-sm text-white/90">
-                                    <span className="font-bold">Riazull Jannat</span> added this card to {board.lists?.find(l => l.id === card.list_id)?.name || "list"}
-                                    <div className="text-xs text-white/50 mt-0.5">Jun 6, 2026, 7:42 PM</div>
-                                </div>
-                            </div>
-                        </div>
+                        {/* Quick Action Buttons Row */}
+                        <CardQuickActions
+                            card={card}
+                            board={board}
+                            projectId={projectId}
+                            onClose={onClose}
+                            onUpdateCard={handleLocalUpdate}
+                            onDeleteCard={onDeleteCard}
+                        />
+
+                        {/* Metadata display badges */}
+                        <CardMetadata card={card} />
+
+                        {/* Description section */}
+                        <CardDescription
+                            card={card}
+                            board={board}
+                            projectId={projectId}
+                            onUpdateCard={handleLocalUpdate}
+                        />
+
+                        {/* Custom fields display/edit */}
+                        <CardCustomFields
+                            card={card}
+                            board={board}
+                            projectId={projectId}
+                            onUpdateCard={handleLocalUpdate}
+                        />
+
+                        {/* Checklists Section */}
+                        <CardChecklists
+                            card={card}
+                            board={board}
+                            projectId={projectId}
+                            onUpdateCard={handleLocalUpdate}
+                        />
+                    </div>
+
+                    {/* Right Column: Comments & Activity (takes 2 of 5 columns) */}
+                    <div className="lg:col-span-2 space-y-6 border-l border-white/5 pl-0 lg:pl-6">
+                        <CardComments
+                            card={card as any}
+                            boardId={board.id}
+                            projectId={projectId}
+                            onUpdateCard={handleLocalUpdate}
+                        />
                     </div>
                 </div>
             </div>
