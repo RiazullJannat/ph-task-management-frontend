@@ -1,52 +1,60 @@
-import Image from "next/image";
-import logo from "../../../public/images/OptiluxBD.png";
-import { Check } from "lucide-react";
+import { CalendarDays, Layers, Pencil, ShieldCheck } from "lucide-react";
+import Link from "next/link";
+
+const features = [
+  { icon: Layers, color: "text-yellow-400 bg-yellow-400/10", label: "Kanban Board", desc: "Drag & drop tasks by date" },
+  { icon: Pencil, color: "text-purple-400 bg-purple-400/10", label: "Image Annotation", desc: "Draw polygons, save to DB" },
+  { icon: CalendarDays, color: "text-blue-400 bg-blue-400/10", label: "Date-Driven Tasks", desc: "Filter tasks per day" },
+  { icon: ShieldCheck, color: "text-green-400 bg-green-400/10", label: "Secure Auth", desc: "JWT-based session management" },
+];
 
 const LoginText = () => {
-  const texts = [
-    "Personalized recommendations and actionable insights",
-    "Enhance sales performance and team productivity",
-    "Engineered from your leads, orders, and customer data",
-  ];
   return (
-    <div className="space-y-8 px-4">
-      <div className="flex items-center gap-2">
-        <Image src={logo} height={100} width={100} alt="logo" />
-        <h1 className="text-2xl font-semibold">Optilux</h1>
-      </div>
+    <div className="hidden lg:flex flex-col justify-center space-y-10 max-w-md px-4">
+      {/* Logo */}
+      <Link href="/" className="flex items-center gap-3">
+        <div className="w-9 h-9 bg-yellow-400 rounded-xl flex items-center justify-center shadow-lg shadow-yellow-400/20">
+          <div className="w-4 h-4 border-[3px] border-[#030115] rotate-45" />
+        </div>
+        <span className="text-2xl font-bold text-white tracking-tight">TaskFlow</span>
+      </Link>
+
+      {/* Headline */}
       <div className="space-y-4">
-        <h1 className="font-poppins text-2xl md:text-[32px] font-medium leading-tight md:leading-[42px] bg-linear-to-b from-[#C3C0D8] to-[#4E0C73] bg-clip-text text-transparent">
-          Unlock Smarter Business Operations <br /> with OptiluxBD CRM
+        <h1 className="text-4xl font-extrabold leading-tight text-white">
+          Manage Tasks.{" "}
+          <span className="bg-gradient-to-r from-yellow-400 to-purple-400 bg-clip-text text-transparent">
+            Annotate Images.
+          </span>
         </h1>
-        <p className="font-poppins text-sm md:text-[16px] font-normal leading-relaxed text-[#9B98AE] self-stretch max-w-lg">
-          Discover the power of smart CRM with data-driven insights, 
-          crafted from your leads, orders, and team activities.
+        <p className="text-[#9B98AE] text-base leading-relaxed">
+          A unified workspace for Kanban-style task management and pixel-perfect
+          image annotation — all persisted to your database.
         </p>
       </div>
 
-      <div className="space-y-3">
-        {texts.map((text, i) => (
-          <p key={i} className="flex items-start gap-2">
-            <span className="text-[#9A8DEC] shrink-0 mt-1">
-              <Check size={18} />
-            </span>{" "}
-            <span className="text-[#EEEBFF] text-sm md:text-base">{text}</span>
-          </p>
+      {/* Feature list */}
+      <div className="grid grid-cols-2 gap-3">
+        {features.map(({ icon: Icon, color, label, desc }) => (
+          <div
+            key={label}
+            className="flex items-start gap-3 p-3 rounded-xl border border-white/[0.07] bg-white/[0.03]"
+          >
+            <div className={`w-8 h-8 rounded-lg ${color} flex items-center justify-center shrink-0`}>
+              <Icon size={15} />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-white">{label}</p>
+              <p className="text-xs text-[#9B98AE]">{desc}</p>
+            </div>
+          </div>
         ))}
       </div>
 
-      <div className="space-y-4">
-        <h2 className="text-sm md:text-base leading-6 text-[#9B98AE]">
-          Trusted by Growing Teams
-        </h2>
-        <Image
-          src="https://res.cloudinary.com/dbb6nen3p/image/upload/v1766492541/suggestions_x7mozp.png"
-          height={50}
-          width={500}
-          alt="suggestion"
-          className="w-full max-w-[400px] h-auto opacity-80"
-        />
-      </div>
+      {/* Bottom quote */}
+      <p className="text-xs text-white/20 border-t border-white/5 pt-6">
+        Believe in the code that believes in you. 🔥
+      </p>
     </div>
   );
 };

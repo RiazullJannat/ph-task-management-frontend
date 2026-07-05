@@ -1,20 +1,18 @@
 "use client";
 
-import ButtonComponent from "@/components/ui/ButtonComponent";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import Link from "next/link";
 import { register } from "@/service/authService";
+import { motion } from "framer-motion";
+import { Eye, EyeOff, Loader2, MoveRight } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
-import { Eye, EyeOff } from "lucide-react";
+
+const roles = [
+  { value: "team_member", label: "Team Member" },
+  { value: "admin", label: "Admin" },
+  { value: "project_manager", label: "Project Manager" },
+];
 
 export default function OrganizationRegisterForm() {
   const router = useRouter();
@@ -35,114 +33,166 @@ export default function OrganizationRegisterForm() {
     }
     setLoading(true);
     const res = await register(formData);
-    if(res?.success){
-      toast.success("Register success");
-      router.push("/login")
-    }else{
-      toast.error(res?.message ?? "Register failed");
+    if (res?.success) {
+      toast.success("Account created! Please sign in.");
+      router.push("/login");
+    } else {
+      toast.error(res?.message ?? "Registration failed");
     }
     setLoading(false);
-  }
+  };
+
+  const inputClass = (hasError?: boolean) =>
+    `w-full bg-white/[0.05] border ${
+      hasError ? "border-red-500/60" : "border-white/[0.08]"
+    } rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-white/20 outline-none focus:border-yellow-400/40 focus:bg-white/[0.07] transition-all`;
 
   return (
-    <div className="effect p-6 rounded-2xl my-6 border bg-card shadow-sm">
-      <div className="space-y-5">
-        <div className="flex items-center justify-start">
-          <span className="text-xl font-bold">Smart Project Kanban</span>
-        </div>
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="w-full max-w-md mx-auto"
+    >
+      <div className="relative rounded-2xl border border-white/[0.08] bg-white/[0.03] backdrop-blur-xl p-8 shadow-2xl">
+        {/* Corner accents */}
+        <div className="absolute top-0 left-0 w-12 h-12 border-t-2 border-l-2 border-yellow-400/30 rounded-tl-2xl pointer-events-none" />
+        <div className="absolute bottom-0 right-0 w-12 h-12 border-b-2 border-r-2 border-purple-400/20 rounded-br-2xl pointer-events-none" />
 
-        <div className="space-y-1">
-          <h1 className="text-2xl font-medium text-[#C3C0D8]">
-            Sign Up for free
-          </h1>
-          <p className="text-[#9B98AE]">Create your team workspace</p>
-        </div>
+        <div className="space-y-6">
+          {/* Header */}
+          <div className="space-y-1">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-7 h-7 bg-yellow-400 rounded-lg flex items-center justify-center shadow-lg shadow-yellow-400/20">
+                <div className="w-3 h-3 border-[2.5px] border-[#030115] rotate-45" />
+              </div>
+              <span className="text-sm font-bold text-white/60 tracking-wide">TaskFlow</span>
+            </div>
+            <h1 className="text-2xl font-bold text-white">Create your account</h1>
+            <p className="text-sm text-[#9B98AE]">Join your team workspace for free</p>
+          </div>
 
-        <div className="flex items-center gap-2 px-6 py-1">
-          <div className="border border-[#2C293D] w-full" />
-          <span>OR</span>
-          <div className="border border-[#2C293D] w-full" />
+          {/* Form */}
+          <form onSubmit={handleRegister} className="space-y-4">
+            {/* Name + Email row */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-white/50 uppercase tracking-wider">
+                  Full Name <span className="text-red-400">*</span>
+                </label>
+                <input
+                  required
+                  type="text"
+                  placeholder="John Doe"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  className={inputClass()}
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-white/50 uppercase tracking-wider">
+                  Email <span className="text-red-400">*</span>
+                </label>
+                <input
+                  required
+                  type="email"
+                  placeholder="you@example.com"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  className={inputClass()}
+                />
+              </div>
+            </div>
+
+            {/* Password + Role row */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-white/50 uppercase tracking-wider">
+                  Password <span className="text-red-400">*</span>
+                </label>
+                <div className="relative">
+                  <input
+                    required
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Min. 8 characters"
+                    value={formData.password}
+                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                    className={`${inputClass()} pr-11`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors"
+                  >
+                    {showPassword ? <Eye size={16} /> : <EyeOff size={16} />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-white/50 uppercase tracking-wider">
+                  Role <span className="text-red-400">*</span>
+                </label>
+                <select
+                  required
+                  value={formData.role}
+                  onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                  className={`${inputClass(!formData.role && false)} appearance-none cursor-pointer`}
+                >
+                  <option value="" disabled className="bg-[#0d0a1f] text-white/40">
+                    Select a role
+                  </option>
+                  {roles.map((r) => (
+                    <option key={r.value} value={r.value} className="bg-[#0d0a1f] text-white">
+                      {r.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Submit */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="relative w-full cursor-pointer bg-white/[0.05] rounded-xl py-2.5 flex items-center justify-center gap-2 overflow-hidden text-white text-sm font-medium hover:bg-white/[0.08] transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-2"
+            >
+              <div className="pointer-events-none absolute bottom-0 left-1/2 w-[calc(100%-2rem)] -translate-x-1/2">
+                <span className="block h-[1.5px] w-full bg-[linear-gradient(to_right,rgba(255,177,63,0)_0%,#FFB13F_50%,rgba(255,177,63,0)_100%)]" />
+              </div>
+              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_120%,rgba(255,177,63,0.12),transparent_70%)]" />
+
+              {loading ? (
+                <Loader2 size={16} className="animate-spin" />
+              ) : (
+                <>
+                  <span>Create Account</span>
+                  <MoveRight size={16} />
+                </>
+              )}
+            </button>
+          </form>
+
+          {/* Divider */}
+          <div className="flex items-center gap-3">
+            <div className="flex-1 h-px bg-white/[0.06]" />
+            <span className="text-xs text-white/20">or</span>
+            <div className="flex-1 h-px bg-white/[0.06]" />
+          </div>
+
+          {/* Login link */}
+          <p className="text-center text-sm text-[#9B98AE]">
+            Already have an account?{" "}
+            <Link
+              href="/login"
+              className="text-purple-400 hover:text-purple-300 font-medium transition-colors"
+            >
+              Sign in
+            </Link>
+          </p>
         </div>
       </div>
-
-      <form className="space-y-6 mt-6" onSubmit={handleRegister}>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="text-sm font-medium">Name <span className="text-red-500">*</span></label>
-            <Input 
-              required
-              value={formData.name} 
-              onChange={(e) => setFormData({...formData, name: e.target.value})} 
-              placeholder="Enter name" 
-            />
-          </div>
-          <div>
-            <label className="text-sm font-medium">Email <span className="text-red-500">*</span></label>
-            <Input 
-              required
-              value={formData.email} 
-              onChange={(e) => setFormData({...formData, email: e.target.value})} 
-              type="email" 
-              placeholder="Enter email address" 
-            />
-          </div>
-          <div>
-            <label className="text-sm font-medium">Password <span className="text-red-500">*</span></label>
-            <div className="relative">
-              <Input 
-                required
-                value={formData.password} 
-                onChange={(e) => setFormData({...formData, password: e.target.value})} 
-                type={showPassword ? "text" : "password"} 
-                placeholder="Create a password" 
-                className="pr-10"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-              >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
-            </div>
-          </div>
-          <div>
-            <label className="text-sm font-medium">Role <span className="text-red-500">*</span></label>
-            <Select 
-              required
-              value={formData.role} 
-              onValueChange={(val) => setFormData({...formData, role: val})}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select a role" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="team_member">Team Member</SelectItem>
-                <SelectItem value="admin">Admin</SelectItem>
-                <SelectItem value="project_manager">Project Manager</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        <ButtonComponent
-          type="submit"
-          clasName="w-full h-11"
-          varient="yellow"
-          buttonName={loading ? "Registering..." : "Register"}
-          disable={loading}
-          onClick={() => handleRegister()}
-        />
-      </form>
-      <p className="flex justify-center gap-1 text-[#9B98AE] mt-4">
-        Already have an account?
-        <Link
-          className="bg-linear-to-b from-[#C3C0D8] to-[#4E0C73] bg-clip-text text-transparent underline underline-offset-2 decoration-[#4E0C73]"
-          href="/login"
-        >
-          Sign In
-        </Link>
-      </p>
-    </div>
+    </motion.div>
   );
 }

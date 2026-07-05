@@ -8,13 +8,11 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
-import logo from "../../../public/images/OptiluxBD.png";
-import Image from "next/image";
-import { Eye, EyeOff, MoveRight } from "lucide-react";
+import { Eye, EyeOff, Loader2, MoveRight } from "lucide-react";
 import Link from "next/link";
-import LargeYellowSvg from "@/components/svgIcon/LargeYellowSvg";
 import { useUser } from "@/provider/AuthProvider";
 import { login } from "@/service/authService";
+import { motion } from "framer-motion";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -42,33 +40,12 @@ const LoginComponent = () => {
     const params = new URLSearchParams(window.location.search);
     const redirectParam = params.get("redirectPath");
     if (redirectParam) {
-      Promise.resolve().then(() => {
-        setRedirect(redirectParam);
-      });
+      Promise.resolve().then(() => setRedirect(redirectParam));
     }
   }, []);
 
   const onSubmit = async (data: TLoginData) => {
-    const toastId = toast.loading("logging in");
-    try {
-      const res = await login(data);
-      if (res?.success) {
-        setIsLoading(false);
-        await refetchUser();
-        toast.success(res?.message, { id: toastId, duration: 3000 });
-        reset();  
-        router.push(redirect ? redirect : "/dashboard/profile");
-      } else {
-        toast.error(res?.error?.message, { id: toastId, duration: 3000 });
-      }
-    } catch (error: any) {
-      toast.error("Something went wrong!", { id: toastId, duration: 3000 });
-      console.log(error);
-    }
-  };
-
-  const handleAdmin = async (data: { email: string; password: string }) => {
-    const toastId = toast.loading("logging in");
+    const toastId = toast.loading("Signing in...");
     try {
       const res = await login(data);
       if (res?.success) {
@@ -76,18 +53,9 @@ const LoginComponent = () => {
         await refetchUser();
         toast.success(res?.message, { id: toastId, duration: 3000 });
         reset();
-        const onboarding =
-          res?.data?.onboarding || res?.data?.onboardingStatus?.data;
-        if (onboarding) {
-          const isCompleted =
-            onboarding?.completed || onboarding?.isOnboardingComplete || false;
-          if (!isCompleted) {
-            return router.push("/onboarding");
-          }
-        }
         router.push(redirect ? redirect : "/dashboard/profile");
       } else {
-        toast.error(res?.message, { id: toastId, duration: 3000 });
+        toast.error(res?.error?.message ?? res?.message, { id: toastId, duration: 3000 });
       }
     } catch (error: any) {
       toast.error("Something went wrong!", { id: toastId, duration: 3000 });
@@ -96,115 +64,130 @@ const LoginComponent = () => {
   };
 
   return (
-    <div className="w-full max-w-sm mx-auto sm:mx-0 rounded-lg bg-[linear-gradient(331deg,rgba(238,235,255,0.04)_-7.38%,rgba(238,235,255,0.02)_-7.37%,rgba(238,235,255,0.08)_107.38%)] px-5 py-6 effect-no-bg">
-      <div className="space-y-6">
-        <div className="space-y-5">
-          <div className="flex items-center justify-start">
-            <Link href="/">
-              <Image
-                src={logo}
-                height={80}
-                width={100}
-                alt="brand logo"
-                className="h-auto w-24"
-              />
-            </Link>
-          </div>
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="w-full max-w-sm mx-auto"
+    >
+      {/* Card */}
+      <div className="relative rounded-2xl border border-white/[0.08] bg-white/[0.03] backdrop-blur-xl p-8 shadow-2xl">
+        {/* Corner accents */}
+        <div className="absolute top-0 left-0 w-12 h-12 border-t-2 border-l-2 border-yellow-400/30 rounded-tl-2xl pointer-events-none" />
+        <div className="absolute bottom-0 right-0 w-12 h-12 border-b-2 border-r-2 border-purple-400/20 rounded-br-2xl pointer-events-none" />
 
+        <div className="space-y-6">
+          {/* Header */}
           <div className="space-y-1">
-            <h1 className="text-2xl font-medium text-[#C3C0D8]">
-              Welcome Back
-            </h1>
-            <p className="text-[#9B98AE] text-sm">
-              Sign in to your account for access
-            </p>
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-7 h-7 bg-yellow-400 rounded-lg flex items-center justify-center shadow-lg shadow-yellow-400/20">
+                <div className="w-3 h-3 border-[2.5px] border-[#030115] rotate-45" />
+              </div>
+              <span className="text-sm font-bold text-white/60 tracking-wide">TaskFlow</span>
+            </div>
+            <h1 className="text-2xl font-bold text-white">Welcome back</h1>
+            <p className="text-sm text-[#9B98AE]">Sign in to your workspace</p>
           </div>
 
-          <div className="flex items-center gap-2 py-1">
-            <div className="border border-[#2C293D] w-full" />
-            <span className="text-xs text-white/40">OR</span>
-            <div className="border border-[#2C293D] w-full" />
-          </div>
-        </div>
+          {/* Form */}
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            {/* Email */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium text-white/50 uppercase tracking-wider">
+                Email
+              </label>
+              <input
+                type="email"
+                placeholder="you@example.com"
+                className={`w-full bg-white/[0.05] border ${
+                  errors.email ? "border-red-500/60" : "border-white/[0.08]"
+                } rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-white/20 outline-none focus:border-yellow-400/40 focus:bg-white/[0.07] transition-all`}
+                {...register("email")}
+              />
+              {errors.email && (
+                <p className="text-xs text-red-400">{errors.email.message}</p>
+              )}
+            </div>
 
+            {/* Password */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-medium text-white/50 uppercase tracking-wider">
+                  Password
+                </label>
+                <Link
+                  href="/forgot-password"
+                  className="text-xs text-purple-400 hover:text-purple-300 transition-colors"
+                >
+                  Forgot password?
+                </Link>
+              </div>
+              <div className="relative">
+                <input
+                  type={visible ? "text" : "password"}
+                  placeholder="••••••••"
+                  className={`w-full bg-white/[0.05] border ${
+                    errors.password ? "border-red-500/60" : "border-white/[0.08]"
+                  } rounded-xl px-4 py-2.5 pr-11 text-sm text-white placeholder:text-white/20 outline-none focus:border-yellow-400/40 focus:bg-white/[0.07] transition-all`}
+                  {...register("password")}
+                />
+                <button
+                  type="button"
+                  onClick={toggle}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors"
+                >
+                  {visible ? <Eye size={16} /> : <EyeOff size={16} />}
+                </button>
+              </div>
+              {errors.password && (
+                <p className="text-xs text-red-400">{errors.password.message}</p>
+              )}
+            </div>
 
-
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 ">
-          {/* Email */}
-          <input
-            id="email"
-            type="email"
-            placeholder="Email Address"
-            className={`${
-              errors.email && "border-red-500 dark:border-red-400"
-            } bg-transparent text-[#514D6A] placeholder:text-[#514D6A] placeholder:text-sm outline-none border border-[#2C293D] py-2 px-5 rounded-full w-full`}
-            {...register("email", { required: "Email is required" })}
-          />
-
-          {/* Password */}
-
-          <div className="relative space-y-3">
-            <input
-              id="password"
-              type={visible ? "text" : "password"}
-              placeholder="Password"
-              className={`${
-                errors.password && "border-red-500 dark:border-red-400"
-              } bg-transparent text-[#514D6A] placeholder:text-[#514D6A] placeholder:text-sm outline-none border border-[#2C293D] py-2 px-5 rounded-full w-full`}
-              {...register("password", { required: "Password is required" })}
-            />
+            {/* Submit */}
             <button
-              type="button"
-              onClick={toggle}
-              className="absolute right-4 top-3 text-[#514D6A] "
+              type="submit"
+              disabled={isSubmitting}
+              className="relative w-full cursor-pointer bg-white/[0.05] rounded-xl py-2.5 flex items-center justify-center gap-2 overflow-hidden text-white text-sm font-medium hover:bg-white/[0.08] transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-2"
             >
-              {visible ? <Eye size={18} /> : <EyeOff size={18} />}
+              {/* Yellow glow bottom border */}
+              <div className="pointer-events-none absolute bottom-0 left-1/2 w-[calc(100%-2rem)] -translate-x-1/2">
+                <span className="block h-[1.5px] w-full bg-[linear-gradient(to_right,rgba(255,177,63,0)_0%,#FFB13F_50%,rgba(255,177,63,0)_100%)]" />
+              </div>
+              {/* Yellow radial glow */}
+              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_120%,rgba(255,177,63,0.12),transparent_70%)]" />
+
+              {isSubmitting ? (
+                <Loader2 size={16} className="animate-spin" />
+              ) : (
+                <>
+                  <span>Continue</span>
+                  <MoveRight size={16} />
+                </>
+              )}
             </button>
-            <Link
-              href="/forgot-password"
-              className=" text-sm bg-[linear-gradient(180deg,#C3C0D8_0%,#7361E5_100%)] bg-clip-text text-transparent underline underline-offset-2 decoration-[#7361E5]"
-            >
-              Forgot Password?
-            </Link>
+          </form>
+
+          {/* Divider */}
+          <div className="flex items-center gap-3">
+            <div className="flex-1 h-px bg-white/[0.06]" />
+            <span className="text-xs text-white/20">or</span>
+            <div className="flex-1 h-px bg-white/[0.06]" />
           </div>
 
-          {/* Submit Button */}
-
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="relative cursor-pointer bg-white/5 rounded-xl py-2 flex items-center justify-center px-4 overflow-hidden w-full text-white"
-          >
-            {/* top and bottom line */}
-            <div className="absolute top-0 left-0 inset-3 border-l border-t border-white/20 rounded-tl-xl pointer-events-none" />
-            <div className="absolute bottom-0 right-0 inset-3 border-r border-b border-white/20 rounded-br-xl pointer-events-none" />
-            <div className="pointer-events-none absolute bottom-0 left-1/2 w-[calc(100%-2rem)] -translate-x-1/2 z-20">
-              <span className="block h-[1.5px] w-full bg-[linear-gradient(to_right,rgba(255,177,63,0)_0%,#FFB13F_50%,rgba(255,177,63,0)_100%)]" />
-            </div>
-            <div className="pointer-events-none">
-              <LargeYellowSvg />
-            </div>
-
-            {/* Button text */}
-            <p className="flex items-center gap-2">
-              <span className="text-sm">Continue</span>
-              <MoveRight />
-            </p>
-          </button>
-        </form>
-
-        {/* Registration Link */}
-        <p className="flex justify-center gap-1 text-[#9B98AE]">
-          New here ?
-          <Link
-            className="bg-linear-to-b from-[#C3C0D8] to-[#4E0C73] bg-clip-text text-transparent underline underline-offset-2 decoration-[#4E0C73]"
-            href="/register"
-          >
-            Sign Up
-          </Link>
-        </p>
+          {/* Register link */}
+          <p className="text-center text-sm text-[#9B98AE]">
+            Don&apos;t have an account?{" "}
+            <Link
+              href="/register"
+              className="text-purple-400 hover:text-purple-300 font-medium transition-colors"
+            >
+              Sign up free
+            </Link>
+          </p>
+        </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

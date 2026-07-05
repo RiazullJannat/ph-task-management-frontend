@@ -27,10 +27,15 @@ const AuthLayout = ({
 }>) => {
   return (
     <div
-      className={`${geistSans.variable} ${geistMono.variable} relative min-h-screen bg-[#030115] overflow-hidden`}
+      className={`${geistSans.variable} ${geistMono.variable} relative min-h-screen bg-[#030115] overflow-hidden flex items-center justify-center`}
     >
+      {/* Background glows */}
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute -top-40 -left-40 w-[700px] h-[700px] rounded-full bg-purple-700/15 blur-[140px]" />
+        <div className="absolute -bottom-40 -right-40 w-[500px] h-[500px] rounded-full bg-yellow-500/8 blur-[120px]" />
+      </div>
       <AuthEllipsSVG />
-      {children}
+      <div className="relative z-10 w-full">{children}</div>
     </div>
   );
 };
