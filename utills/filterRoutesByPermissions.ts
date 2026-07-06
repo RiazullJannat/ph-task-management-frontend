@@ -1,97 +1,53 @@
-import { NavRoute } from "@/constants/CRM_Navigation";
-type TFilterRoutesByPermission = {
+import { navigationRoute, NavRoute, TRole } from "@/constants/CRM_Navigation";
+
+type TFilterRoutes = {
   routes: NavRoute[];
-  permissions: string[];
   role: string;
 };
 
-type TCanAccessRoute = {
-  route: NavRoute;
-  permissions: string[];
-  role?: string;
-};
-
-export const canAccessRoute = ({
-  route,
-  permissions = [],
-  role,
-}: TCanAccessRoute): boolean => {
-  if (!route) return false;
-
-  const safePermissions = Array.isArray(permissions) ? permissions : [];
-  const isOwner = role === "Owner";
-
-  const isPublicRoute =
-    !route?.ownerOnly &&
-    (!route?.permissions || route.permissions.length === 0) &&
-    (!route?.roles || route.roles.length === 0);
-
-  // ✅ Public → everyone can access
-  if (isPublicRoute) {
-    return true;
-  }
-
-  // ✅ Owner → ownerOnly + public (public already handled above)
-  if (isOwner) {
-    return route?.ownerOnly === true;
-  }
-
-  // ✅ Role-based access
-  if (route?.roles && route.roles.length > 0 && role) {
-    if (route.roles.includes(role)) {
-      return true;
-    }
-  }
-
-  // ✅ Non-owner → only permission routes
-  if (route?.permissions && route.permissions.length > 0) {
-    return route.permissions.some((p) => safePermissions.includes(p));
-  }
-
-  return false;
-};
-
-export const filterRoutesByPermissions = ({
+export const filterRoutesByRole = ({
   routes,
-  permissions,
   role,
-}: TFilterRoutesByPermission): NavRoute[] => {
-  // Ensure routes is an array
-  if (!Array.isArray(routes)) {
-    return [];
-  }
-  
-  // Ensure permissions is an array
-  const safePermissions = Array.isArray(permissions) ? permissions : [];
-  
+}: TFilterRoutes): NavRoute[] => {
   return routes
     .map((route) => {
-      if (!route) {
-        return null;
-      }
-      
-      if (route?.children && Array.isArray(route.children) && route.children.length > 0) {
-        const filteredChildren = filterRoutesByPermissions({
+      if (route.children?.length) {
+        const children = filterRoutesByRole({
           routes: route.children,
-          permissions: safePermissions,
           role,
         });
-        if (filteredChildren.length > 0) {
+
+        if (children.length) {
           return {
             ...route,
-            children: filteredChildren,
+            children,
           };
         }
-        return null;
       }
-      
-      const hasAccess = canAccessRoute({
-        route,
-        permissions: safePermissions,
-        role,
-      });
 
-      return hasAccess ? route : null;
+      if (!route.roles) return route;
+
+      return route.roles.includes(role as TRole) ? route : null;
     })
     .filter(Boolean) as NavRoute[];
+};
+
+
+export const getRestrictedRoutesForRole = (role: TRole) => {
+  const restricted: string[] = [];
+  const walk = (routes: NavRoute[]) => {
+    for (const route of routes) {
+      if (route.path && route.roles && !route.roles.includes(role)) {
+        restricted.push(route.path);
+      }
+
+      if (route.children) {
+        walk(route.children);
+      }
+    }
+  };
+
+  walk(navigationRoute);
+
+  return restricted;
 };

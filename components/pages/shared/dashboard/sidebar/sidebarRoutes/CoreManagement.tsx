@@ -11,8 +11,8 @@ import {
   SidebarMenuItem,
   SidebarMenuSub,
   SidebarMenuSubItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
-import SubItemButton from "@/components/pages/shared/dashboard/sidebar/buttons/SubItemButton";
 
 import { matchRoute } from "@/utills/matchRoute";
 import { Minus, Plus } from "lucide-react";
@@ -20,6 +20,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import SidebarButtonEffect from "../buttons/ItemButton";
+import SubItemButton from "../buttons/SubItemButton";
 import { NavRoute } from "@/constants/CRM_Navigation";
 
 type TCoreManagementRoute = {
@@ -35,7 +36,14 @@ const CoreManagement = ({
 }: TCoreManagementRoute) => {
   const pathname = usePathname();
   const [open, setOpen] = useState<number | null>(null);
+  const { setOpenMobile, isMobile } = useSidebar();
   const isActiveCommunication = pathname === singleRoute?.path;
+
+  const handleLinkClick = () => {
+    if (isMobile) {
+      setOpenMobile(false);
+    }
+  };
 
   return (
     <div>
@@ -46,16 +54,15 @@ const CoreManagement = ({
       <SidebarMenu className="gap-0">
         {sidebarRoutes.map((item, i) => {
           const isActive = item?.path ? matchRoute(pathname, item.path) : false;
-
+    
           const isChildActive = item.children?.some((child) =>
             child.path ? matchRoute(pathname, child.path) : false,
           );
-
           if (!item.children || item.children.length === 0) {
             return (
               <SidebarMenuItem key={i} className="w-full">
                 {item.path ? (
-                  <Link href={item.path}>
+                  <Link href={item.path} onClick={handleLinkClick}>
                     <SidebarMenuButton
                       tooltip={item.title}
                       asChild

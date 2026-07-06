@@ -48,12 +48,13 @@ const LoginComponent = () => {
     const toastId = toast.loading("Signing in...");
     try {
       const res = await login(data);
+      console.log("login res ->>" , res)
       if (res?.success) {
         setIsLoading(false);
         await refetchUser();
         toast.success(res?.message, { id: toastId, duration: 3000 });
         reset();
-        router.push(redirect ? redirect : "/dashboard/profile");
+        router.push(redirect ? redirect : "/dashboard");
       } else {
         toast.error(res?.error?.message ?? res?.message, { id: toastId, duration: 3000 });
       }
