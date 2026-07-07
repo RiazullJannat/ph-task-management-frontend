@@ -6,7 +6,7 @@ import { config } from "@/config";
 import { jwtDecode } from "jwt-decode";
 import { cookies } from "next/headers";
 import { TForgetPasswordData } from "@/components/auth/forgetPassword/ForgetPasswordComponent";
-import { createData, readData } from "../apiService/crud";
+import { createData, createPublicData, readData } from "../apiService/crud";
 import { TSetNewPass } from "@/components/auth/resetPassword/SetNewPassword";
 
 type TLogin = {
@@ -18,11 +18,10 @@ type TRegister = {
   name: string;
   email: string;
   password: string;
-  role: string;
 }
 //register
 export const register = async (data: TRegister) => {
-  const res = await createData<TRegister>(
+  const res = await createPublicData<TRegister>(
     `/auth/register`,
     "/register",
     data,

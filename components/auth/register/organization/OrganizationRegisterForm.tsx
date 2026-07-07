@@ -8,12 +8,6 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
-const roles = [
-  { value: "team_member", label: "Team Member" },
-  { value: "admin", label: "Admin" },
-  { value: "project_manager", label: "Project Manager" },
-];
-
 export default function OrganizationRegisterForm() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -22,12 +16,11 @@ export default function OrganizationRegisterForm() {
     name: "",
     email: "",
     password: "",
-    role: "",
   });
 
   const handleRegister = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    if (!formData.name || !formData.email || !formData.password || !formData.role) {
+    if (!formData.name || !formData.email || !formData.password) {
       toast.error("Please fill all required fields");
       return;
     }
@@ -42,10 +35,8 @@ export default function OrganizationRegisterForm() {
     setLoading(false);
   };
 
-  const inputClass = (hasError?: boolean) =>
-    `w-full bg-white/[0.05] border ${
-      hasError ? "border-red-500/60" : "border-white/[0.08]"
-    } rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-white/20 outline-none focus:border-yellow-400/40 focus:bg-white/[0.07] transition-all`;
+  const inputClass = () =>
+    `w-full bg-white/[0.05] border border-white/[0.08] rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-white/20 outline-none focus:border-yellow-400/40 focus:bg-white/[0.07] transition-all`;
 
   return (
     <motion.div
@@ -74,7 +65,7 @@ export default function OrganizationRegisterForm() {
 
           {/* Form */}
           <form onSubmit={handleRegister} className="space-y-4">
-            {/* Name + Email row */}
+            {/* Name + Email */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-white/50 uppercase tracking-wider">
@@ -105,50 +96,27 @@ export default function OrganizationRegisterForm() {
               </div>
             </div>
 
-            {/* Password + Role row */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium text-white/50 uppercase tracking-wider">
-                  Password <span className="text-red-400">*</span>
-                </label>
-                <div className="relative">
-                  <input
-                    required
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Min. 8 characters"
-                    value={formData.password}
-                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    className={`${inputClass()} pr-11`}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors"
-                  >
-                    {showPassword ? <Eye size={16} /> : <EyeOff size={16} />}
-                  </button>
-                </div>
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium text-white/50 uppercase tracking-wider">
-                  Role <span className="text-red-400">*</span>
-                </label>
-                <select
+            {/* Password — full width */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium text-white/50 uppercase tracking-wider">
+                Password <span className="text-red-400">*</span>
+              </label>
+              <div className="relative">
+                <input
                   required
-                  value={formData.role}
-                  onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                  className={`${inputClass(!formData.role && false)} appearance-none cursor-pointer`}
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Min. 8 characters"
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  className={`${inputClass()} pr-11`}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors"
                 >
-                  <option value="" disabled className="bg-[#0d0a1f] text-white/40">
-                    Select a role
-                  </option>
-                  {roles.map((r) => (
-                    <option key={r.value} value={r.value} className="bg-[#0d0a1f] text-white">
-                      {r.label}
-                    </option>
-                  ))}
-                </select>
+                  {showPassword ? <Eye size={16} /> : <EyeOff size={16} />}
+                </button>
               </div>
             </div>
 

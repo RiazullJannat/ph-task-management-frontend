@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Task, TaskStatus, TaskPriority, CreateTaskPayload, UpdateTaskPayload } from '@/types/tasks/tasks.types';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -30,32 +30,38 @@ export default function TaskModal({
     onDelete,
     onSwitchToEdit
 }: TaskModalProps) {
-    const [title, setTitle] = useState('');
-    const [description, setDescription] = useState('');
-    const [status, setStatus] = useState<TaskStatus>('TODO');
-    const [priority, setPriority] = useState<TaskPriority>('MEDIUM');
-    const [dueDate, setDueDate] = useState('');
-    const [tagsInput, setTagsInput] = useState('');
-
-    useEffect(() => {
-        if (isOpen) {
-            if (mode === 'CREATE') {
-                setTitle('');
-                setDescription('');
-                setStatus('TODO');
-                setPriority('MEDIUM');
-                setDueDate(initialDate || '');
-                setTagsInput('');
-            } else if (task) {
-                setTitle(task.title);
-                setDescription(task.description || '');
-                setStatus(task.status);
-                setPriority(task.priority);
-                setDueDate(task.due_date);
-                setTagsInput(task.tags ? task.tags.join(', ') : '');
-            }
+    const initialValues = useMemo(() => {
+        if (mode === 'CREATE' || !task) {
+            return { title: '', description: '', status: 'TODO' as TaskStatus, priority: 'MEDIUM' as TaskPriority, dueDate: initialDate || '', tagsInput: '' };
         }
-    }, [isOpen, mode, task, initialDate]);
+        return {
+            title: task.title,
+            description: task.description || '',
+            status: task.status,
+            priority: task.priority,
+            dueDate: task.due_date,
+            tagsInput: task.tags ? task.tags.join(', ') : ''
+        };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isOpen, mode, task?.id]);
+
+    const [title, setTitle] = useState(initialValues.title);
+    const [description, setDescription] = useState(initialValues.description);
+    const [status, setStatus] = useState<TaskStatus>(initialValues.status);
+    const [priority, setPriority] = useState<TaskPriority>(initialValues.priority);
+    const [dueDate, setDueDate] = useState(initialValues.dueDate);
+    const [tagsInput, setTagsInput] = useState(initialValues.tagsInput);
+
+    const prevValues = React.useRef(initialValues);
+    if (prevValues.current !== initialValues) {
+        prevValues.current = initialValues;
+        setTitle(initialValues.title);
+        setDescription(initialValues.description);
+        setStatus(initialValues.status);
+        setPriority(initialValues.priority);
+        setDueDate(initialValues.dueDate);
+        setTagsInput(initialValues.tagsInput);
+    }
 
     const handleSave = async () => {
         if (!title || !dueDate) {
@@ -88,7 +94,7 @@ export default function TaskModal({
 
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent className="max-w-[550px] bg-[#13102a] border border-white/10 text-white shadow-2xl backdrop-blur-3xl">
+            <DialogContent className="max-w-[550px]! bg-[#13102a] border border-white/10 text-white shadow-2xl backdrop-blur-3xl">
                 <DialogHeader>
                     <DialogTitle className="text-xl font-bold tracking-wide flex justify-between items-center pr-4">
                         <span className="bg-clip-text text-transparent bg-gradient-to-r from-white to-white/70">

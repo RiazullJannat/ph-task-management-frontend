@@ -1,4 +1,4 @@
-import { crmRoutes, NavRoute } from "@/constants/CRM_Navigation";
+import { navigationRoute, NavRoute } from "@/constants/CRM_Navigation";
 import { useUser } from "@/provider/AuthProvider";
 
 export type PermissionRoute = {
@@ -37,8 +37,8 @@ export const extractPermissionRoutes = (
       result.push({
         path: route.path,
         pattern: new RegExp(`^${route.path}`),
-        permissions: route?.permissions ?? route?.roles ?? [],
-        ownerOnly: route?.ownerOnly ?? false,
+        permissions: route?.roles ?? [],
+        ownerOnly:  false,
       });
     }
     if (route?.children && Array.isArray(route.children)) {
@@ -49,5 +49,5 @@ export const extractPermissionRoutes = (
 };
 
 export const permissionBasedRoutes = [
-  ...extractPermissionRoutes(crmRoutes),
+  ...extractPermissionRoutes(navigationRoute),
 ].sort((a, b) => b.pattern.source.length - a.pattern.source.length);

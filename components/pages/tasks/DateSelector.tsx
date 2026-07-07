@@ -8,6 +8,7 @@ interface DateSelectorProps {
 }
 
 export default function DateSelector({ selectedDate, onChange }: DateSelectorProps) {
+    const today = new Date().toLocaleDateString('en-CA');
     return (
         <div className="flex items-center gap-3">
             <Label htmlFor="date-filter" className="text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -16,7 +17,8 @@ export default function DateSelector({ selectedDate, onChange }: DateSelectorPro
             <Input 
                 id="date-filter"
                 type="date" 
-                value={selectedDate} 
+                value={selectedDate}
+                max={today}
                 onChange={(e) => onChange(e.target.value)}
                 className="w-auto shadow-sm"
             />

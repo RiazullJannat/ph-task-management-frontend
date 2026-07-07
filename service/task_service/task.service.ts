@@ -1,8 +1,9 @@
 import { CreateTaskPayload, UpdateTaskPayload } from "@/types/tasks/tasks.types";
 import { createData, deleteData, patchData, readData } from "../apiService/crud";
+import { Query } from "@/types/shared/shared.types";
 
-export async function getUserTasks() {
-    return await readData("/tasks/", [''])
+export async function getUserTasks(query: Query) {
+    return await readData("/tasks/", [''], query)
 }
 
 export async function createTasks(data: CreateTaskPayload) {

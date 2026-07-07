@@ -1,10 +1,17 @@
 import AllTasks from "@/components/pages/tasks/AllTasks";
 import PageHeader from "@/components/ui/PageHeader";
 import { getUserTasks } from "@/service/task_service/task.service";
-import React from "react";
+import { Query, TSearchParams } from "@/types/shared/shared.types";
 
-export default async function TasksPage() {
-  const responce = await getUserTasks();
+
+export default async function TasksPage({
+  searchParams,
+}: {
+  searchParams?: TSearchParams;
+}) {
+  const query = await searchParams;
+  const responce = await getUserTasks(query as Query);
+  console.log(responce)
   return (
     <div className="p-6">
       <PageHeader title="Your All Tasks" subtitle="A centralized list of assigned tasks across all projects."/>

@@ -1,30 +1,21 @@
 "use client";
 
-import React, { useState, useMemo } from 'react';
-import { Task, TaskStatus, TaskPriority, CreateTaskPayload, UpdateTaskPayload } from '@/types/tasks/tasks.types';
+import React, { useState } from 'react';
+import { CreateTaskPayload, Task, TaskStatus, UpdateTaskPayload } from '@/types/tasks/tasks.types';
 import { updateTask, createTasks, deleteTask } from '@/service/task_service/task.service';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Trash2, Edit2, X } from 'lucide-react';
+import { Plus, } from 'lucide-react';
 import { toast } from 'sonner';
 
 import DateSelector from './DateSelector';
 import Column from './Column';
 import TaskCard from './TaskCard';
 import TaskModal from './TaskModal';
+import useFilters from '@/hooks/useFilters';
 
 export default function AllTasks({ tasks: initialTasks }: { tasks: Task[] }) {
     const [tasks, setTasks] = useState<Task[]>(initialTasks || []);
     const [draggedTask, setDraggedTask] = useState<Task | null>(null);
-    
-    // Default selected date to today (or to an empty string to show all, but prompt says "manage tasks by date")
-    // Let's use today's date in YYYY-MM-DD format as default, or empty to show all. 
-    // Since we need to filter by date, let's start with empty so they see tasks.
-    const [selectedDate, setSelectedDate] = useState<string>('');
 
     // Modal state
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -36,12 +27,6 @@ export default function AllTasks({ tasks: initialTasks }: { tasks: Task[] }) {
         { id: 'IN_PROGRESS', label: 'In Progress' },
         { id: 'DONE', label: 'Done' }
     ];
-
-    // Filter tasks by selected date
-    const filteredTasks = useMemo(() => {
-        if (!selectedDate) return tasks;
-        return tasks.filter(task => task.due_date === selectedDate);
-    }, [tasks, selectedDate]);
 
     const openCreateModal = () => {
         setModalMode('CREATE');
@@ -59,10 +44,15 @@ export default function AllTasks({ tasks: initialTasks }: { tasks: Task[] }) {
         setModalMode('EDIT');
     };
 
-    const handleModalSave = async (payload: any, id?: number) => {
+
+    const { handleChange, getParam } = useFilters();
+    const selectedDate = getParam('date') ?? '';
+    const filteredTasks = selectedDate ? tasks.filter(t => t.due_date === selectedDate) : tasks;
+
+    const handleModalSave = async (payload: UpdateTaskPayload | CreateTaskPayload, id?: number) => {
         if (modalMode === 'CREATE') {
             try {
-                const res = await createTasks(payload);
+                const res = await createTasks(payload as CreateTaskPayload);
                 if (res?.data) {
                     setTasks([...tasks, res.data]);
                     toast.success("Task created successfully");
@@ -162,10 +152,10 @@ export default function AllTasks({ tasks: initialTasks }: { tasks: Task[] }) {
         });
 
         setTasks(updatedTasks);
-        
+
         const currentDraggedId = draggedTask.id;
         const currentTargetId = targetTask.id;
-        
+
         setDraggedTask(null);
 
         try {
@@ -181,7 +171,7 @@ export default function AllTasks({ tasks: initialTasks }: { tasks: Task[] }) {
     const handleInlineStatusChange = async (task: Task, newStatus: TaskStatus) => {
         const updatedTask = { ...task, status: newStatus };
         setTasks(tasks.map(t => t.id === task.id ? updatedTask : t));
-        
+
         try {
             await updateTask({ status: newStatus }, task.id);
             toast.success("Status updated");
@@ -194,8 +184,8 @@ export default function AllTasks({ tasks: initialTasks }: { tasks: Task[] }) {
     return (
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <DateSelector selectedDate={selectedDate} onChange={setSelectedDate} />
-                
+                <DateSelector selectedDate={selectedDate} onChange={(date) => handleChange('date', date)} />
+
                 <Button onClick={openCreateModal} className="gap-2 shadow-sm">
                     <Plus className="w-4 h-4" />
                     Create Task
@@ -204,18 +194,18 @@ export default function AllTasks({ tasks: initialTasks }: { tasks: Task[] }) {
 
             <div className="flex flex-col lg:flex-row gap-6 items-start">
                 {COLUMNS.map(col => {
-                    const columnTasks = filteredTasks.filter(t => t.status === col.id).sort((a,b) => a.position - b.position);
+                    const columnTasks = filteredTasks.filter(t => t.status === col.id).sort((a, b) => a.position - b.position);
                     return (
-                        <Column 
-                            key={col.id} 
-                            status={col.id} 
-                            label={col.label} 
+                        <Column
+                            key={col.id}
+                            status={col.id}
+                            label={col.label}
                             tasks={columnTasks}
                             onDragOver={handleDragOver}
                             onDrop={handleColumnDrop}
                         >
                             {columnTasks.map(task => (
-                                <TaskCard 
+                                <TaskCard
                                     key={task.id}
                                     task={task}
                                     onDragStart={handleDragStart}

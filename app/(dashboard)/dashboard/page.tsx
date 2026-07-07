@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
 
 export default function DashboardRoute() {
-  redirect("/dashboard/projects");
+  redirect("/dashboard/tasks");
 }
