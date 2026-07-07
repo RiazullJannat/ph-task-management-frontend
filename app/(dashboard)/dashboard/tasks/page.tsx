@@ -1,10 +1,15 @@
+import AllTasks from "@/components/pages/tasks/AllTasks";
+import PageHeader from "@/components/ui/PageHeader";
+import { getUserTasks } from "@/service/task_service/task.service";
 import React from "react";
 
-export default function TasksPage() {
+export default async function TasksPage() {
+  const responce = await getUserTasks();
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">My Tasks</h1>
-      <p>A centralized list of assigned tasks across all projects.</p>
+      <PageHeader title="Your All Tasks" subtitle="A centralized list of assigned tasks across all projects."/>
+
+      <AllTasks tasks = {responce.data}/>
     </div>
   );
 }

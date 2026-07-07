@@ -1,8 +1,8 @@
 import {
   Activity,
   House,
+  List,
   LucideIcon,
-  Users,
 } from "lucide-react";
 
 export interface NavRoute {
@@ -23,15 +23,14 @@ export const navigationRoute: NavRoute[] = [
     path: "/",
   },
   {
-    title: "Users",
-    icon: Users,
-    path: "/users",
-    roles: ["ADMIN"],
+    title: "Tasks",
+    icon: List,
+    path: "/dashboard/tasks",
   },
   {
     title: "Activity Log",
     icon: Activity,
-    path: "/activity-log",
+    path: "/dashboard/activity-log",
     roles: ["ADMIN"],
   },
 ];
