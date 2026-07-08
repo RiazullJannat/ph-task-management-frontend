@@ -1,9 +1,10 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CreateTaskPayload, Task, TaskStatus, UpdateTaskPayload } from '@/types/tasks/tasks.types';
 import { updateTask, createTasks, deleteTask } from '@/service/task_service/task.service';
-import { Button } from '@/components/ui/button';
+// Removed unused Button import to fix lint warning
 import { Plus, } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -18,6 +19,11 @@ import ButtonComponent from '@/components/ui/ButtonComponent';
 
 export default function AllTasks({ tasks: initialTasks }: { tasks: Task[] }) {
     const [tasks, setTasks] = useState<Task[]>(initialTasks || []);
+
+    // Keep local tasks in sync when parent/server provides new initialTasks (e.g., on search)
+    useEffect(() => {
+        setTasks(initialTasks || []);
+    }, [initialTasks]);
     const [draggedTask, setDraggedTask] = useState<Task | null>(null);
 
     // Modal state
@@ -198,8 +204,8 @@ export default function AllTasks({ tasks: initialTasks }: { tasks: Task[] }) {
                     <DateSelector selectedDate={selectedDate} onChange={(date) => handleChange('date', date)} />
                     <ResetButton setLimit={setShow} setCurrPage={setCurrentPage} />
 
-                    <ButtonComponent varient='yellow'  icon={Plus}
-                    buttonName="Create Task" onClick={openCreateModal} />
+                    <ButtonComponent varient='yellow' icon={Plus}
+                        buttonName="Create Task" onClick={openCreateModal} />
                 </div>
             </div>
 

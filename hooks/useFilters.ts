@@ -27,10 +27,10 @@ export default function useFilters() {
         } else {
             params.set(name, value);
 
-            if (name !== "page") {
-                params.set("page", "1");
-                setCurrentPage(1);
-            }
+            // if (name !== "page") {
+            //     params.set("page", "1");
+            //     setCurrentPage(1);
+            // }
         }
 
         // Use debounce only for search
