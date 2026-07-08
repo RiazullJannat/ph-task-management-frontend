@@ -11,7 +11,6 @@ export default async function TasksPage({
 }) {
   const query = await searchParams;
   const responce = await getUserTasks(query as Query);
-  console.log(responce)
   return (
     <div className="p-6">
       <PageHeader title="Your All Tasks" subtitle="A centralized list of assigned tasks across all projects."/>

@@ -12,6 +12,9 @@ import Column from './Column';
 import TaskCard from './TaskCard';
 import TaskModal from './TaskModal';
 import useFilters from '@/hooks/useFilters';
+import ResetButton from '@/components/ui/ResetButton';
+import { Input } from '@/components/ui/input';
+import ButtonComponent from '@/components/ui/ButtonComponent';
 
 export default function AllTasks({ tasks: initialTasks }: { tasks: Task[] }) {
     const [tasks, setTasks] = useState<Task[]>(initialTasks || []);
@@ -45,7 +48,7 @@ export default function AllTasks({ tasks: initialTasks }: { tasks: Task[] }) {
     };
 
 
-    const { handleChange, getParam } = useFilters();
+    const { handleChange, getParam, setShow, setCurrentPage } = useFilters();
     const selectedDate = getParam('date') ?? '';
     const filteredTasks = selectedDate ? tasks.filter(t => t.due_date === selectedDate) : tasks;
 
@@ -184,12 +187,20 @@ export default function AllTasks({ tasks: initialTasks }: { tasks: Task[] }) {
     return (
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <DateSelector selectedDate={selectedDate} onChange={(date) => handleChange('date', date)} />
+                <div>
+                    <Input
+                        className="w-full lg:w-64 text-sm bg-transparent"
+                        onChange={(e) => handleChange("title", e.target.value)}
+                        placeholder="Search tasks..."
+                    />
+                </div>
+                <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+                    <DateSelector selectedDate={selectedDate} onChange={(date) => handleChange('date', date)} />
+                    <ResetButton setLimit={setShow} setCurrPage={setCurrentPage} />
 
-                <Button onClick={openCreateModal} className="gap-2 shadow-sm">
-                    <Plus className="w-4 h-4" />
-                    Create Task
-                </Button>
+                    <ButtonComponent varient='yellow'  icon={Plus}
+                    buttonName="Create Task" onClick={openCreateModal} />
+                </div>
             </div>
 
             <div className="flex flex-col lg:flex-row gap-6 items-start">
