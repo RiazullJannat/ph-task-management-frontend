@@ -3,6 +3,7 @@ import {
   House,
   List,
   LucideIcon,
+  PenSquare,
 } from "lucide-react";
 
 export interface NavRoute {
@@ -26,6 +27,11 @@ export const navigationRoute: NavRoute[] = [
     title: "Tasks",
     icon: List,
     path: "/dashboard/tasks",
+  },
+  {
+    title: "Annotation",
+    icon: PenSquare,
+    path: "/dashboard/annotate",
   },
   {
     title: "Activity Log",
