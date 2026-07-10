@@ -1,4 +1,4 @@
-import { Project } from "@/types/annotate/annotate.types";
+import { TProject } from "@/types/annotate/annotate.types";
 import { format } from "date-fns";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,8 +9,8 @@ export default function ProjectCard({
   onEdit,
   onDelete,
 }: {
-  project: Project;
-  onEdit: (project: Project) => void;
+  project: TProject;
+  onEdit: (project: TProject) => void;
   onDelete: (id: string) => void;
 }) {
   const defaultImage = project.images?.[0]?.image_url || "https://i.ibb.co/6wPQy9V/placeholder-image.png";

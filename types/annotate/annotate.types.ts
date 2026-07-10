@@ -43,3 +43,17 @@ export interface TProject {
     updated_at: string;
     user: number;
 }
+
+
+export interface CreateAnnotationPayload {
+    image: string;
+    coordinates: Coordinate[];
+    fill_color: string;
+    label: string;
+}
+
+export interface UpdateAnnotationPayload {
+    coordinates?: Coordinate[];
+    fill_color?: string;
+    label?: string;
+}
