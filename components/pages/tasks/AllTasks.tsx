@@ -131,7 +131,6 @@ export default function AllTasks({ tasks: initialTasks }: { tasks: Task[] }) {
 
             try {
                 await updateTask({ status: newStatus }, draggedTask.id);
-                toast.success("Task moved");
             } catch (error) {
                 setTasks(tasks.map(t => t.id === draggedTask.id ? draggedTask : t));
                 toast.error("Failed to move task");
@@ -170,7 +169,6 @@ export default function AllTasks({ tasks: initialTasks }: { tasks: Task[] }) {
         try {
             await updateTask({ status: newStatus, position: newPos }, currentDraggedId);
             await updateTask({ position: oldPos }, currentTargetId);
-            toast.success("Tasks rearranged successfully");
         } catch (error) {
             setTasks(tasks);
             toast.error("Failed to rearrange tasks");
