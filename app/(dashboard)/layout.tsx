@@ -20,7 +20,7 @@ const geistMono = Geist_Mono({
 // Metadata for Next.js
 export const metadata: Metadata = {
   title: "Optilux CRM",
-  description: "This is the dashboard of Optiluxbd CRM",
+  description: "This is the dashboard",
 };
 
 // Root layout component

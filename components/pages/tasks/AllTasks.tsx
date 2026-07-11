@@ -126,11 +126,15 @@ export default function AllTasks({ tasks: initialTasks }: { tasks: Task[] }) {
         if (!draggedTask) return;
 
         if (draggedTask.status !== newStatus) {
-            const updatedTask = { ...draggedTask, status: newStatus };
+            const targetColumnTasks = tasks.filter(t => t.status === newStatus);
+            const maxPos = targetColumnTasks.length > 0 ? Math.max(...targetColumnTasks.map(t => t.position || 0)) : 0;
+            const newPos = maxPos + 1;
+
+            const updatedTask = { ...draggedTask, status: newStatus, position: newPos };
             setTasks(tasks.map(t => t.id === draggedTask.id ? updatedTask : t));
 
             try {
-                await updateTask({ status: newStatus }, draggedTask.id);
+                await updateTask({ status: newStatus, position: newPos }, draggedTask.id);
             } catch (error) {
                 setTasks(tasks.map(t => t.id === draggedTask.id ? draggedTask : t));
                 toast.error("Failed to move task");
@@ -149,26 +153,43 @@ export default function AllTasks({ tasks: initialTasks }: { tasks: Task[] }) {
             return;
         }
 
-        const newPos = targetTask.position;
-        const oldPos = draggedTask.position;
         const newStatus = targetTask.status;
-
+        
+        // Get all tasks in target column except the dragged one
+        const targetColumnTasks = tasks
+            .filter(t => t.status === newStatus && t.id !== draggedTask.id)
+            .sort((a, b) => (a.position || 0) - (b.position || 0));
+        
+        // Find the index of the target task
+        const targetIndex = targetColumnTasks.findIndex(t => t.id === targetTask.id);
+        
+        // Insert dragged task at the target index
+        targetColumnTasks.splice(targetIndex >= 0 ? targetIndex : 0, 0, { ...draggedTask, status: newStatus });
+        
+        // Re-assign positions sequentially for this column
+        const updatedTargetTasks = targetColumnTasks.map((t, index) => ({
+            ...t,
+            position: index + 1
+        }));
+        
+        // Create final tasks array with updated positions
         const updatedTasks = tasks.map(t => {
-            if (t.id === draggedTask.id) return { ...t, status: newStatus, position: newPos };
-            if (t.id === targetTask.id) return { ...t, position: oldPos };
-            return t;
+            const ut = updatedTargetTasks.find(x => x.id === t.id);
+            return ut || t;
         });
 
         setTasks(updatedTasks);
 
-        const currentDraggedId = draggedTask.id;
-        const currentTargetId = targetTask.id;
+        // Find which tasks actually changed to minimize API calls
+        const tasksToUpdate = updatedTargetTasks.filter(t => {
+            const oldT = tasks.find(ot => ot.id === t.id);
+            return !oldT || oldT.position !== t.position || oldT.status !== t.status;
+        });
 
         setDraggedTask(null);
 
         try {
-            await updateTask({ status: newStatus, position: newPos }, currentDraggedId);
-            await updateTask({ position: oldPos }, currentTargetId);
+            await Promise.all(tasksToUpdate.map(t => updateTask({ status: t.status, position: t.position }, t.id)));
         } catch (error) {
             setTasks(tasks);
             toast.error("Failed to rearrange tasks");

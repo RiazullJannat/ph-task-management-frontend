@@ -77,7 +77,7 @@ export default function TopBarControls({
                     />
                     <span className="text-[#9B98AE] group-hover:text-white transition">Hide Marks</span>
                 </label>
-                <label className="flex items-center space-x-2 text-xs cursor-pointer group">
+                {/* <label className="flex items-center space-x-2 text-xs cursor-pointer group">
                     <input 
                         type="checkbox" 
                         checked={applyCTWindow} 
@@ -85,7 +85,7 @@ export default function TopBarControls({
                         className="rounded border-white/[0.15] bg-[#13102a] text-[#51A2FF] focus:ring-[#51A2FF] w-4 h-4 cursor-pointer transition"
                     />
                     <span className="text-[#9B98AE] group-hover:text-white transition">CT Window</span>
-                </label>
+                </label> */}
                 <div className="w-px h-6 bg-white/[0.08] mx-1"></div>
                 <ButtonComponent buttonName={isSegmentationMode ? 'Stop Drawing' : 'Draw Shape'} varient='yellow' onClick={toggleSegmentationMode} icon={PenTool} />
             </div>

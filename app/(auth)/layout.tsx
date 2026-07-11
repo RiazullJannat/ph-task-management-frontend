@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 
 // Metadata for Next.js
 export const metadata: Metadata = {
-  title: "Optilux CRM",
-  description: "This is the auth layout of Optiluxbd CRM",
+  title: "TaskFlow",
+  description: "This is the auth layout of TaskFlow",
 };
 
 // Root layout component

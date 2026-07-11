@@ -28,13 +28,11 @@ function RemoteLogo({ url }: { url: string }) {
 
 function DefaultLogo() {
   return (
-    <Image
-      src={Optilux}
-      alt="Logo"
-      width={32}
-      height={32}
-      className="object-contain w-full h-full"
-    />
+    <Link href="/" className="flex items-center gap-3">
+      <div className="w-9 h-9 bg-yellow-400 rounded-xl flex items-center justify-center shadow-lg shadow-yellow-400/20">
+        <div className="w-4 h-4 border-[3px] border-[#030115] rotate-45" />
+      </div>
+    </Link>
   );
 }
 
@@ -48,14 +46,14 @@ export function TeamSwitcher({
   logoUrl?: string | null;
 }) {
   const { state } = useSidebar();
-      const trimedName = name.length > 10 ? name.slice(0, 10) + "..." : name;
+  const trimedName = name.length > 10 ? name.slice(0, 10) + "..." : name;
   return (
     <SidebarMenu>
       <SidebarMenuItem>
         <div className="flex items-center justify-between">
           <Link href={"/"}>
             <div className="flex items-center gap-3">
-              <div 
+              <div
                 className="flex aspect-square size-10 items-center justify-center rounded-lg overflow-hidden p-0.5"
                 style={{ background: 'linear-gradient(to bottom right, #FFFFFF 2%, #FFB13F, #FFCB7F, #d4b012ff)' }}
               >

@@ -55,7 +55,7 @@ export default function Footer() {
                 <div className="w-5 h-5 border-[3px] border-[#030115] rotate-45" />
               </div>
               <span className="text-2xl md:text-3xl font-bold tracking-tight bg-linear-to-r from-white to-white/60 bg-clip-text text-transparent">
-                Optilux
+                TaskFlow
               </span>
             </div>
 

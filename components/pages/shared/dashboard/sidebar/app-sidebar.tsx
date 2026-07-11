@@ -23,7 +23,7 @@ import { CustomScrollbar } from "@/components/ui/CustomScrollbar";
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const router = useRouter();
   const { setUser, setIsLoading, user } = useUser();
-  const companyName = "OptiluxBD";
+  const companyName = "TaskFlow";
   const logoUrl = null;
 
   const handleLogOut = async () => {

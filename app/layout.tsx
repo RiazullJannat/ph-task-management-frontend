@@ -22,8 +22,8 @@ const notoSansBengali = Noto_Sans_Bengali({
 });
 
 export const metadata: Metadata = {
-  title: "Optilux CRM",
-  description: "This is a customer management system for optiluxbd",
+  title: "TaskFlow",
+  description: "This is a task management system",
 };
 
 export default function RootLayout({

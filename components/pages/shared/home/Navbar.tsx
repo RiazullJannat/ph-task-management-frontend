@@ -38,7 +38,6 @@ export default function Navbar() {
     const toastId = toast.loading("logging out", { duration: 3000 });
     try {
       const res = await logout();
-      console.log("logut res-->>> ",res)
       if (res.success) {
         setIsLoading(true);
         setUser(null);
@@ -77,17 +76,11 @@ export default function Navbar() {
       <div className="max-w-[1444px] mx-auto px-4 ">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link
-            href="/"
-            className="text-yellow-400 font-bold text-xl flex items-center gap-2"
-          >
-            <Image
-              src={"/images/OptiluxBD.png"}
-              alt="optiluxBD"
-              width={100}
-              height={100}
-              className="w-auto h-8"
-            />
+          <Link href="/" className="flex items-center gap-3">
+            <div className="w-9 h-9 bg-yellow-400 rounded-xl flex items-center justify-center shadow-lg shadow-yellow-400/20">
+              <div className="w-4 h-4 border-[3px] border-[#030115] rotate-45" />
+            </div>
+            <span className="text-2xl font-bold text-white tracking-tight">TaskFlow</span>
           </Link>
 
           {/* Desktop Menu */}
@@ -122,8 +115,8 @@ export default function Navbar() {
                 <SheetHeader className="text-left pt-6 px-8 mb-4">
                   <SheetTitle>
                     <Image
-                      src={"/images/OptiluxBD.png"}
-                      alt="optiluxBD"
+                      src={""}
+                      alt="TaskFlow"
                       width={120}
                       height={40}
                       className="w-auto h-10"
