@@ -25,7 +25,7 @@ const colColor: Record<string, string> = {
 
 export default function HeroSection() {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#030115] pt-16">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#030115] pt-24 pb-12 lg:pt-16 lg:pb-0">
       {/* Background glows */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute -top-32 -left-32 w-[600px] h-[600px] rounded-full bg-purple-700/20 blur-[120px]" />

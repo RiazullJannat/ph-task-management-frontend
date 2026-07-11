@@ -10,7 +10,7 @@ const features = [
 
 const LoginText = () => {
   return (
-    <div className="hidden lg:flex flex-col justify-center space-y-10 max-w-md px-4">
+    <div className="flex flex-col justify-center space-y-8 lg:space-y-10 max-w-md mx-auto lg:mx-0 px-0 sm:px-4 w-full">
       {/* Logo */}
       <Link href="/" className="flex items-center gap-3">
         <div className="w-9 h-9 bg-yellow-400 rounded-xl flex items-center justify-center shadow-lg shadow-yellow-400/20">
@@ -34,7 +34,7 @@ const LoginText = () => {
       </div>
 
       {/* Feature list */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {features.map(({ icon: Icon, color, label, desc }) => (
           <div
             key={label}

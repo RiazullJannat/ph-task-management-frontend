@@ -45,7 +45,7 @@ export default function OrganizationRegisterForm() {
       transition={{ duration: 0.5 }}
       className="w-full max-w-md mx-auto"
     >
-      <div className="relative rounded-2xl border border-white/[0.08] bg-white/[0.03] backdrop-blur-xl p-8 shadow-2xl">
+      <div className="relative rounded-2xl border border-white/[0.08] bg-white/[0.03] backdrop-blur-xl p-6 sm:p-8 shadow-2xl">
         {/* Corner accents */}
         <div className="absolute top-0 left-0 w-12 h-12 border-t-2 border-l-2 border-yellow-400/30 rounded-tl-2xl pointer-events-none" />
         <div className="absolute bottom-0 right-0 w-12 h-12 border-b-2 border-r-2 border-purple-400/20 rounded-br-2xl pointer-events-none" />

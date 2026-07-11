@@ -14,7 +14,7 @@ export default function CTABanner() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.7 }}
-          className="relative rounded-3xl overflow-hidden border border-purple-500/20 bg-gradient-to-br from-[#1a0533] via-[#0d0a1f] to-[#030115] p-12 md:p-20 text-center"
+          className="relative rounded-3xl overflow-hidden border border-purple-500/20 bg-gradient-to-br from-[#1a0533] via-[#0d0a1f] to-[#030115] p-6 sm:p-12 md:p-20 text-center"
         >
           {/* Glows */}
           <div className="pointer-events-none absolute -top-20 -left-20 w-72 h-72 bg-purple-600/20 blur-[100px] rounded-full" />
