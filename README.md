@@ -1,37 +1,83 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🚀 TaskFlow Frontend - The Saga
 
-## Getting Started
+Welcome to the **TaskFlow** Frontend repository! This project is a minimalist futuristic Task Management and Medical Image Annotation platform built with **Next.js**, **Tailwind CSS**, and **Konva.js**.
 
-First, run the development server:
+---
 
+## ⚔️ The Villains We Faced (Difficulties & Triumphs)
+
+*(A note from the developer: Every great saga has its villains. Here are the dragons we had to slay to bring this project to life.)*
+
+### 🐉 Villain 1: [Write the name of the Bug or Difficulty here]
+**The Battle (What went wrong):** 
+[Describe the issue, how it broke things, or why it was so frustrating to deal with.]
+
+**The Victory (How it was solved):** 
+[Describe how you overcame it! Was it deep-diving into documentation? A specific StackOverflow post? Or the power of friendship with an AI? Explain your triumphant solution!]
+
+### 🐉 Villain 2: [Write the name of the Bug or Difficulty here]
+**The Battle (What went wrong):** 
+[Describe your second difficulty here.]
+
+**The Victory (How it was solved):** 
+[Describe how you defeated this villain.]
+
+*(Feel free to add more villains as you recall them!)*
+
+---
+
+## 🛠️ Environment Requirements
+
+Before you begin your journey to run this project, make sure your environment is equipped with the right tools.
+
+- **Node.js Version:** `v18.17.0` or higher (Recommended: `v20.x`)
+- **Package Manager:** `pnpm` (Recommended) or `npm` / `yarn`
+- **Backend Compatibility:** Ensure the TaskFlow Backend server is running. The backend requires **Python 3.10+**.
+
+---
+
+## 🏃‍♂️ Detailed Steps to Run the Project
+
+Follow these exact steps to run the frontend application on your local machine:
+
+### Step 1: Clone the Repository
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/RiazullJannat/ph-task-management-frontend.git
+cd ph-task-management-frontend
 ```
-// this is from rjannat
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Step 2: Install Dependencies
+We highly recommend using `pnpm` for faster and more reliable installations.
+```bash
+pnpm install
+# or if you use npm:
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Step 3: Setup Environment Variables
+Create a `.env` or `.env.local` file in the root directory and configure your backend API endpoint.
+```env
+NEXT_PUBLIC_BASE_API=http://localhost:8000/api
+```
+*(Adjust the URL based on where your backend is running).*
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Step 4: Run the Development Server
+Fire up the Next.js development server:
+```bash
+pnpm dev
+# or if you use npm:
+npm run dev
+```
 
-## Learn More
+### Step 5: Open the App
+Open your browser and navigate to:
+[http://localhost:3000](http://localhost:3000)
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🏗️ Build for Production
+To create an optimized production build, run:
+```bash
+pnpm build
+pnpm start
+```
