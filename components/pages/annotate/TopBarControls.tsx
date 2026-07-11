@@ -87,7 +87,7 @@ export default function TopBarControls({
                     <span className="text-[#9B98AE] group-hover:text-white transition">CT Window</span>
                 </label> */}
                 <div className="w-px h-6 bg-white/[0.08] mx-1"></div>
-                <ButtonComponent buttonName={isSegmentationMode ? 'Stop Drawing' : 'Draw Shape'} varient='yellow' onClick={toggleSegmentationMode} icon={PenTool} />
+                <ButtonComponent varient={isSegmentationMode ? 'red' : 'yellow'} onClick={toggleSegmentationMode} icon={PenTool} />
             </div>
         </div>
     );

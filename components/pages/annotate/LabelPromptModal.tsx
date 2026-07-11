@@ -32,7 +32,7 @@ export default function LabelPromptModal({
 }: LabelPromptModalProps) {
     return (
         <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
-            <DialogContent className="max-w-[425px]! ">
+            <DialogContent className="w-[90%] md:max-w-[425px]! ">
                 <DialogHeader>
                     <DialogTitle className="text-white tracking-wide">Label Your Annotation</DialogTitle>
                     <DialogDescription className="text-[#9B98AE]">

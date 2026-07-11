@@ -137,7 +137,7 @@ export default function HeroSection() {
                 </div>
 
                 {/* Columns */}
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   {["To Do", "In Progress", "Done"].map((col) => (
                     <div
                       key={col}

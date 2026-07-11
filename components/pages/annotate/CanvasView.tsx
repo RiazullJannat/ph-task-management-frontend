@@ -330,6 +330,7 @@ export default function CanvasView({ images = [], viewId = "1" }: { images: Proj
                         height={dimensions.height}
                         onWheel={handleWheel}
                         onMouseDown={handleStageMouseDown}
+                        onTouchStart={handleStageMouseDown}
                         scaleX={scale}
                         scaleY={scale}
                         x={position.x}

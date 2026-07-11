@@ -113,14 +113,15 @@ export default function Navbar() {
                 className="bg-[#030115] border-white/10 text-white w-[300px] p-0 flex flex-col"
               >
                 <SheetHeader className="text-left pt-6 px-8 mb-4">
-                  <SheetTitle>
-                    <Image
-                      src={""}
-                      alt="TaskFlow"
-                      width={120}
-                      height={40}
-                      className="w-auto h-10"
-                    />
+                  <SheetTitle className="flex gap-2">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-yellow-400 rounded-xl flex items-center justify-center shadow-lg shadow-yellow-400/20">
+                        <div className="w-5 h-5 border-[3px] border-[#030115] rotate-45" />
+                      </div>
+                      <span className="text-2xl md:text-3xl font-bold tracking-tight bg-linear-to-r from-white to-white/60 bg-clip-text text-transparent">
+                        TaskFlow
+                      </span>
+                    </div>
                   </SheetTitle>
                 </SheetHeader>
 
