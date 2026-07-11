@@ -27,7 +27,7 @@ export default function Column({
 
     return (
         <div 
-            className={`flex-1 bg-white/[0.03] rounded-xl p-4 min-h-[500px] border border-white/[0.08] backdrop-blur-[20px] transition-colors border-t-4 ${getBorderTopColor()}`}
+            className={`w-full bg-white/[0.03] rounded-xl p-4 min-h-[500px] border border-white/[0.08] backdrop-blur-[20px] transition-colors border-t-4 ${getBorderTopColor()}`}
             onDragOver={onDragOver}
             onDrop={(e) => onDrop(e, status)}
         >

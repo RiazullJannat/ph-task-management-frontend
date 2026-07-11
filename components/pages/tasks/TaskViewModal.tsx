@@ -3,6 +3,7 @@ import { Task } from '@/types/tasks/tasks.types';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Trash2, Edit2, Tag } from 'lucide-react';
+import ButtonComponent from '@/components/ui/ButtonComponent';
 
 interface TaskViewModalProps {
     isOpen: boolean;
@@ -23,7 +24,7 @@ export default function TaskViewModal({
 
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent className="max-w-[550px]! bg-[#13102a] border border-white/10 text-white shadow-2xl backdrop-blur-3xl">
+            <DialogContent className="w-[90%] max-h-[70vh] overflow-y-auto md:max-w-[550px]!">
                 <DialogHeader>
                     <DialogTitle className="text-xl font-bold tracking-wide flex justify-between items-center pr-4">
                         <span className="bg-clip-text text-transparent bg-gradient-to-r from-white to-white/70">
@@ -87,24 +88,10 @@ export default function TaskViewModal({
 
                 <div className="flex justify-between items-center mt-2 pt-4 border-t border-white/10">
                     <div>
-                        <Button 
-                            variant="destructive" 
-                            size="sm" 
-                            onClick={() => onDelete(task.id)}
-                            className="gap-1.5 bg-[#F50F0F]/10 text-[#F50F0F] hover:bg-[#F50F0F]/20 border border-[#F50F0F]/20"
-                        >
-                            <Trash2 className="w-4 h-4" />
-                            Delete
-                        </Button>
+                        <ButtonComponent buttonName='Delete' varient='red' onClick={() => onDelete(task.id)}/>
                     </div>
                     <div className="flex gap-3">
-                        <Button 
-                            variant="outline" 
-                            onClick={onClose}
-                            className="bg-transparent border-white/20 text-white hover:bg-white/10 hover:text-white"
-                        >
-                            Close
-                        </Button>
+                        <ButtonComponent buttonName='Close' onClick={onClose}/>
                     </div>
                 </div>
             </DialogContent>

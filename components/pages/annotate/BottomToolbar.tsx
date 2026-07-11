@@ -23,7 +23,7 @@ export default function BottomToolbar({
     hasAnnotationsOrPoints,
 }: BottomToolbarProps) {
     return (
-        <div className="flex items-center justify-between px-5 py-3  backdrop-blur-md border-t border-white/[0.08]">
+        <div className="flex flex-col sm:flex-row items-center justify-between px-5 py-3 backdrop-blur-md border-t border-white/[0.08] gap-4">
             {/* Zoom Controls */}
             <div className="flex items-center space-x-1.5">
                 <button 

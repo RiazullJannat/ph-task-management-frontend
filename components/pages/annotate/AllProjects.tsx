@@ -45,28 +45,31 @@ export default function AllProjects({ projects }: { projects: TProject[] }) {
 
     return (
         <div className="mt-8">
-            <div className="flex justify-between items-center mb-8">
-                <div>
+            <div className="flex xl:flex-row justify-between items-start xl:items-center gap-4 ">
+                <div className="w-full xl:w-auto">
                     <Input
-                        className="w-full lg:w-64 text-sm bg-transparent"
+                        className="w-full xl:w-64 text-sm bg-transparent"
                         onChange={(e) => handleChange("title", e.target.value)}
-                        placeholder="Search tasks..."
+                        placeholder="Search projects..."
                     />
                 </div>
-                <div className="flex gap-2 items-center">
-                    <DateSelector selectedDate={selectedDate} onChange={(date) => handleChange('date', date)} />
-                    <ResetButton setLimit={setShow} setCurrPage={setCurrentPage} />
-                    <ButtonComponent
-                        buttonName="Create Project"
-                        varient="yellow"
-                        icon={Plus}
-                        onClick={() => setIsCreateModalOpen(true)}
-                    />
+                <div className="flex flex-col sm:flex-row flex-wrap gap-4 items-start sm:items-center w-full xl:w-auto">
+                    <div className="flex md:gap-4 justify-between w-full">
+                        <DateSelector selectedDate={selectedDate} onChange={(date) => handleChange('date', date)} />
+                        <ResetButton setLimit={setShow} setCurrPage={setCurrentPage} />
+                        <ButtonComponent
+                            buttonName="Project"
+                            hideTextOnMobile={true}
+                            varient="yellow"
+                            icon={Plus}
+                            onClick={() => setIsCreateModalOpen(true)}
+                        />
+                    </div>
                 </div>
             </div>
 
             {projects?.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div className="my-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {projects.map((project) => (
                         <ProjectCard
                             key={project.id}
@@ -97,7 +100,7 @@ export default function AllProjects({ projects }: { projects: TProject[] }) {
             />
 
             <Dialog open={!!deleteProjectId} onOpenChange={(open) => !open && setDeleteProjectId(null)}>
-                <DialogContent showCloseButton className="bg-[#0d0a1f] border-white/10 text-white max-w-md!">
+                <DialogContent showCloseButton className="w-[90%] md:max-w-md! bg-[#0d0a1f] border-white/10 text-white">
                     <DialogHeader>
                         <DialogTitle className="text-white">Delete Project</DialogTitle>
                         <DialogDescription className="text-white/60 mt-2">

@@ -30,7 +30,7 @@ export default function AnotationClient({ images }: { images: ProjectImage[] }) 
                 </div>
             </div>
             
-            <div className={`grid gap-6 ${splitView ? 'grid-cols-2' : 'grid-cols-1'}`}>
+            <div className={`grid gap-6 ${splitView ? 'grid-cols-1 lg:grid-cols-2' : 'grid-cols-1'}`}>
                 <CanvasView images={images} viewId="1" />
                 {splitView && <CanvasView images={images} viewId="2" />}
             </div>

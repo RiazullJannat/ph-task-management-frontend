@@ -156,24 +156,24 @@ export default function AllTasks({ tasks: initialTasks }: { tasks: Task[] }) {
         }
 
         const newStatus = targetTask.status;
-        
+
         // Get all tasks in target column except the dragged one
         const targetColumnTasks = tasks
             .filter(t => t.status === newStatus && t.id !== draggedTask.id)
             .sort((a, b) => (a.position || 0) - (b.position || 0));
-        
+
         // Find the index of the target task
         const targetIndex = targetColumnTasks.findIndex(t => t.id === targetTask.id);
-        
+
         // Insert dragged task at the target index
         targetColumnTasks.splice(targetIndex >= 0 ? targetIndex : 0, 0, { ...draggedTask, status: newStatus });
-        
+
         // Re-assign positions sequentially for this column
         const updatedTargetTasks = targetColumnTasks.map((t, index) => ({
             ...t,
             position: index + 1
         }));
-        
+
         // Create final tasks array with updated positions
         const updatedTasks = tasks.map(t => {
             const ut = updatedTargetTasks.find(x => x.id === t.id);
@@ -213,20 +213,25 @@ export default function AllTasks({ tasks: initialTasks }: { tasks: Task[] }) {
 
     return (
         <div className="space-y-6">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <div>
+            <div className="flex xl:flex-row justify-between items-start xl:items-center gap-4">
+                <div className="w-full xl:w-auto">
                     <Input
-                        className="w-full lg:w-64 text-sm bg-transparent"
+                        className="w-full xl:w-64 text-sm bg-transparent"
                         onChange={(e) => handleChange("title", e.target.value)}
                         placeholder="Search tasks..."
                     />
                 </div>
-                <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-                    <DateSelector selectedDate={selectedDate} onChange={(date) => handleChange('date', date)} />
-                    <ResetButton setLimit={setShow} setCurrPage={setCurrentPage} />
-
-                    <ButtonComponent varient='yellow' icon={Plus}
-                        buttonName="Create Task" onClick={openCreateModal} />
+                <div className="flex flex-col sm:flex-row flex-wrap gap-4 items-start sm:items-center w-full xl:w-auto">
+                    <div className="flex md:gap-4 justify-between w-full">
+                        <DateSelector selectedDate={selectedDate} onChange={(date) => handleChange('date', date)} />
+                        <ResetButton setLimit={setShow} setCurrPage={setCurrentPage} />
+                        <ButtonComponent
+                            hideTextOnMobile={true}
+                            varient='yellow' icon={Plus}
+                            buttonName="Task"
+                            onClick={openCreateModal}
+                        />
+                    </div>
                 </div>
             </div>
 

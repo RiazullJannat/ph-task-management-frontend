@@ -38,6 +38,7 @@ type TButtonComponentProps = {
     data?: any,
   ) => void | Promise<void>;
   disable?: boolean;
+  hideTextOnMobile?: boolean;
 } & React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 const ButtonComponent = forwardRef<HTMLButtonElement, TButtonComponentProps>(
@@ -82,7 +83,7 @@ const ButtonComponent = forwardRef<HTMLButtonElement, TButtonComponentProps>(
               }
             />
           )}
-          {buttonName && <span className="text-sm">{buttonName}</span>}
+          {buttonName && <span className={cn("text-sm", props.hideTextOnMobile && "hidden sm:inline-block")}>{buttonName}</span>}
         </p>
 
         {/* Variant effects */}

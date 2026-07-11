@@ -55,7 +55,7 @@ export default function UpdateProjectModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent showCloseButton className="max-w-2xl! bg-[#0d0a1f] border-white/10 text-white">
+      <DialogContent showCloseButton className="w-[90%] max-h-[85vh] overflow-y-auto md:max-w-2xl! bg-[#0d0a1f] border-white/10 text-white custom-scrollbar">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-white mb-2">Update Project</DialogTitle>
         </DialogHeader>

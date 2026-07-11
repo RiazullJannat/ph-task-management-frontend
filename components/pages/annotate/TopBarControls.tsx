@@ -37,7 +37,7 @@ export default function TopBarControls({
     toggleSegmentationMode,
 }: TopBarControlsProps) {
     return (
-        <div className="flex flex-wrap items-center justify-between px-5 py-3.5  backdrop-blur-md border-b border-white/[0.08] gap-y-3">
+        <div className="flex flex-col xl:flex-row items-center justify-between px-5 py-3.5 backdrop-blur-md border-b border-white/[0.08] gap-4">
             {/* Classification Options */}
             <div className="flex items-center space-x-4">
                 <div className="flex flex-col">

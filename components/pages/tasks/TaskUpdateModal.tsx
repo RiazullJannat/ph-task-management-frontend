@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
+import ButtonComponent from '@/components/ui/ButtonComponent';
 
 interface TaskUpdateModalProps {
     isOpen: boolean;
@@ -55,7 +56,7 @@ export default function TaskUpdateModal({
 
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent className="max-w-[550px]! bg-[#13102a] border border-white/10 text-white shadow-2xl backdrop-blur-3xl">
+            <DialogContent className="w-[90%] max-h-[70vh] overflow-y-auto md:max-w-[550px]!">
                 <DialogHeader>
                     <DialogTitle className="text-xl font-bold tracking-wide">
                         <span className="bg-clip-text text-transparent bg-gradient-to-r from-white to-white/70">
@@ -112,7 +113,7 @@ export default function TaskUpdateModal({
 
                 <div className="flex justify-end items-center mt-2 pt-4 border-t border-white/10">
                     <div className="flex gap-3">
-                        <Button 
+                        {/* <Button 
                             variant="outline" 
                             onClick={onClose}
                             className="bg-transparent border-white/20 text-white hover:bg-white/10 hover:text-white"
@@ -124,7 +125,9 @@ export default function TaskUpdateModal({
                             className="bg-[#FFB13F] text-black hover:bg-[#FFB13F]/90 shadow-[0_0_15px_rgba(255,177,63,0.3)]"
                         >
                             Save Changes
-                        </Button>
+                        </Button> */}
+                        <ButtonComponent varient='red' buttonName='Cancel' onClick={onClose}/>
+                        <ButtonComponent varient='yellow' buttonName='Save Changes' onClick={handleSave}/>
                     </div>
                 </div>
             </DialogContent>

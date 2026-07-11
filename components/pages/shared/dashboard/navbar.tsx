@@ -20,7 +20,7 @@ import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 const Navbar: React.FC = () => {
-  const { state } = useSidebar();
+  const { state, isMobile } = useSidebar();
   const router = useRouter();
   const [scrolled, setScrolled] = useState(false);
   const { setUser, user, setIsLoading } = useUser();
@@ -68,17 +68,11 @@ const Navbar: React.FC = () => {
           : "bg-transparent"
       }`}
     >
-      {state === "collapsed" && <SidebarTrigger />}
+      {(state === "collapsed" || isMobile) && <SidebarTrigger />}
       <div className={`w-full flex items-center justify-between gap-2 px-1}`}>
         <div className="w-full flex items-center justify-between gap-2">
           <div className="pl-2">
-            <Button
-              onClick={() => router.back()}
-              variant="outline"
-              className="cursor-pointer"
-            >
-              <ArrowLeft />
-            </Button>
+            <ArrowLeft size={20} cursor={'pointer'} onClick={() => router.back()}/>
           </div>
           <div className="flex items-center gap-4">
 
