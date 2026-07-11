@@ -31,10 +31,17 @@ const LoginComponent = () => {
     handleSubmit,
     register,
     reset,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<TLoginData>({
     resolver: zodResolver(loginSchema),
   });
+
+  const handleFastLogin = () => {
+    setValue('email', 'riazull.jannat@gmail.com');
+    setValue('password', 'rjannat77111');
+    handleSubmit(onSubmit)();
+  };
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -53,7 +60,7 @@ const LoginComponent = () => {
         await refetchUser();
         toast.success(res?.message, { id: toastId, duration: 3000 });
         reset();
-        router.push(redirect ? redirect : "/");
+        router.push(redirect ? redirect : "/dashboard/tasks");
       } else {
         toast.error(res?.error?.message ?? res?.message, { id: toastId, duration: 3000 });
       }
@@ -165,6 +172,16 @@ const LoginComponent = () => {
                   <MoveRight size={16} />
                 </>
               )}
+            </button>
+
+            {/* Fast Login */}
+            <button
+              type="button"
+              onClick={handleFastLogin}
+              disabled={isSubmitting}
+              className="w-full cursor-pointer bg-[#51A2FF]/10 border border-[#51A2FF]/20 rounded-xl py-2.5 flex items-center justify-center text-[#51A2FF] text-sm font-medium hover:bg-[#51A2FF]/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-3"
+            >
+              Fast Login (Demo)
             </button>
           </form>
 

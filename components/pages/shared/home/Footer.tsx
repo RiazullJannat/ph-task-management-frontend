@@ -60,18 +60,18 @@ export default function Footer() {
             </div>
 
             <p className="text-[#9B98AE] text-base leading-relaxed">
-              Unlock smarter business operations with data-driven CRM insights crafted for your growth.
+              Transform your workflow with TaskFlow — the ultimate productivity platform designed to streamline tasks, enhance collaboration, and boost efficiency.
             </p>
 
             <div className="space-y-4 text-[#9B98AE] text-sm md:text-base">
               <div className="flex flex-col gap-1">
                 <p className="font-semibold text-white">Address:</p>
-                <p>House 12, Road 5, Block C, Banani, Dhaka</p>
+                <p>Jahanabad Cant, Gilatala, Khulna, Bangladesh</p>
               </div>
               <div className="flex flex-col gap-1">
                 <p className="font-semibold text-white">Contact:</p>
-                <p>+880 1234-567890</p>
-                <p>info@optiluxbd.com</p>
+                <p>+8801948848898</p>
+                <p>riazull.jannat@gmail.com</p>
               </div>
             </div>
 
@@ -147,15 +147,14 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 text-xs md:text-sm text-white/40 text-center md:text-left">
-          
+
           <div className="flex gap-8">
             <Link href="#" className="hover:text-white transition-colors">Privacy Policy</Link>
             <Link href="#" className="hover:text-white transition-colors">Terms of Service</Link>
           </div>
-          <p>© {new Date().getFullYear()} Optilux BD. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} TaskFlow. All rights reserved.</p>
         </div>
       </div>
     </footer>
-
   );
 }

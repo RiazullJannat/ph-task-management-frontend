@@ -11,7 +11,9 @@ import { toast } from 'sonner';
 import DateSelector from './DateSelector';
 import Column from './Column';
 import TaskCard from './TaskCard';
-import TaskModal from './TaskModal';
+import TaskCreateModal from './TaskCreateModal';
+import TaskUpdateModal from './TaskUpdateModal';
+import TaskViewModal from './TaskViewModal';
 import useFilters from '@/hooks/useFilters';
 import ResetButton from '@/components/ui/ResetButton';
 import { Input } from '@/components/ui/input';
@@ -257,13 +259,24 @@ export default function AllTasks({ tasks: initialTasks }: { tasks: Task[] }) {
                 })}
             </div>
 
-            <TaskModal
-                isOpen={isModalOpen}
+            <TaskCreateModal
+                isOpen={isModalOpen && modalMode === 'CREATE'}
                 onClose={() => setIsModalOpen(false)}
-                mode={modalMode}
-                task={selectedTask}
                 initialDate={selectedDate}
-                onSave={handleModalSave}
+                onSave={(payload) => handleModalSave(payload)}
+            />
+
+            <TaskUpdateModal
+                isOpen={isModalOpen && modalMode === 'EDIT'}
+                onClose={() => setIsModalOpen(false)}
+                task={selectedTask}
+                onSave={(payload, id) => handleModalSave(payload, id)}
+            />
+
+            <TaskViewModal
+                isOpen={isModalOpen && modalMode === 'VIEW'}
+                onClose={() => setIsModalOpen(false)}
+                task={selectedTask}
                 onDelete={handleDelete}
                 onSwitchToEdit={switchToEditMode}
             />
