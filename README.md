@@ -33,7 +33,7 @@ Follow these exact steps to run the frontend application on your local machine:
 
 ### Step 1: Clone the Repository
 ```bash
-git clone https://github.com/RiazullJannat/ph-task-management-frontend.git
+git clone https://github.com/RiazullJannat/task-flow-frontend.git
 cd ph-task-management-frontend
 ```
 
