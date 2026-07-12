@@ -8,21 +8,12 @@ Welcome to the **TaskFlow** Frontend repository! This project is a minimalist fu
 
 *(A note from the developer: Every great saga has its villains. Here are the dragons we had to slay to bring this project to life.)*
 
-### 🐉 Villain 1: [Write the name of the Bug or Difficulty here]
-**The Battle (What went wrong):** 
-[Describe the issue, how it broke things, or why it was so frustrating to deal with.]
+### 🐉 Villain 1: Implementing the Medical Image Annotation Engine
+**The Battle:** 
+During the frontend development, I faced a significant challenge with the annotation feature. The requirements were unique, and there weren't many clear guidelines or tutorials available on YouTube or tech blogs.
 
-**The Victory (How it was solved):** 
-[Describe how you overcame it! Was it deep-diving into documentation? A specific StackOverflow post? Or the power of friendship with an AI? Explain your triumphant solution!]
-
-### 🐉 Villain 2: [Write the name of the Bug or Difficulty here]
-**The Battle (What went wrong):** 
-[Describe your second difficulty here.]
-
-**The Victory (How it was solved):** 
-[Describe how you defeated this villain.]
-
-*(Feel free to add more villains as you recall them!)*
+**The Victory:** 
+However, by leveraging AI assistance and experimenting, I successfully figured it out and completed the implementation.
 
 ---
 
